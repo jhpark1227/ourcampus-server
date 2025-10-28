@@ -1,7 +1,6 @@
 package com.example.school.user.dto;
 
-import com.example.school.domain.Member;
-import com.example.school.domain.ReviewImage;
+import com.example.school.user.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,9 +1,9 @@
 package com.example.school.user.converter;
 
-import com.example.school.domain.Inquiry;
-import com.example.school.domain.Member;
-import com.example.school.domain.Review;
-import com.example.school.domain.ReviewImage;
+import com.example.school.user.domain.Inquiry;
+import com.example.school.user.domain.Member;
+import com.example.school.review.domain.Review;
+import com.example.school.review.domain.ReviewImage;
 import com.example.school.user.dto.UserRequestDTO;
 import com.example.school.user.dto.UserResponseDTO;
 import org.springframework.data.domain.Page;

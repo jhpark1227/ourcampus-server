@@ -1,11 +1,15 @@
 package com.example.school.auth.config.util;
 
-import com.example.school.auth.service.UserDetailsServiceImpl;
+import com.example.school.auth.application.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Collection;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,11 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Collection;
-import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -104,7 +103,8 @@ public final class JwtUtils {
 
     public boolean validateToken(String jwtToken) {
         log.info("Enter the validateToken Method");
-        Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(getSigningKey(SECRET_KEY)).build().parseClaimsJws(jwtToken);
+        Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(getSigningKey(SECRET_KEY)).build()
+                .parseClaimsJws(jwtToken);
         log.info("email : " + claims.getBody().get("email"));
 
         return !claims.getBody().getExpiration().before(new Date());

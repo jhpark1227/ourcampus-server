@@ -1,21 +1,21 @@
 package com.example.school.auth.config.handler;
 
-import com.example.school.apiPayload.status.ErrorStatus;
+import com.example.school.global.apiPayload.status.ErrorStatus;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import java.io.IOException;
-
 @Slf4j
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+                         AuthenticationException authException) throws IOException, ServletException {
         String exception = (String) request.getAttribute("exception");
         log.info("exception: " + exception);
 
@@ -35,7 +35,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         /**
          * 토큰 만료된 경우
          */
-        if(exception.equals(ErrorStatus.EXPIRED_JWT.getMessage())) {
+        if (exception.equals(ErrorStatus.EXPIRED_JWT.getMessage())) {
             log.info("토큰이 만료된 경우 !!!");
             response.getWriter().write("{'error': '토큰이 만료되었습니다.'}");
             return;
@@ -44,7 +44,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         /**
          * 토큰 시그니처가 다른 경우
          */
-        if(exception.equals(ErrorStatus.BAD_JWT.getMessage())) {
+        if (exception.equals(ErrorStatus.BAD_JWT.getMessage())) {
             log.info("이상한 토큰이 들어왔습니다. !!!");
             response.getWriter().write("{'error': '유효하지 않은 토큰입니다.'}");
         }

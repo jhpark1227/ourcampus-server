@@ -1,15 +1,15 @@
 package com.example.school.facility.converter;
 
-import com.example.school.domain.Facility;
-import com.example.school.domain.Reservation;
-import com.example.school.facility.dto.FacilityResponseDTO;
+import com.example.school.facility.domain.Facility;
+import com.example.school.reservation.domain.Reservation;
+import com.example.school.facility.application.dto.FacilityResponseDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class FacilityConverter {
-    public static FacilityResponseDTO.DetailDTO detailDTO(Facility facility,Reservation reservation){
+    public static FacilityResponseDTO.DetailDTO detailDTO(Facility facility, Reservation reservation) {
         return FacilityResponseDTO.DetailDTO.builder()
                 .facilityId(facility.getId())
                 .name(facility.getName())
@@ -27,7 +27,8 @@ public class FacilityConverter {
                 .build();
     }
 
-    public static FacilityResponseDTO.DetailResultDTO detailResultDTO(Page<Facility> facilityList,Page<Reservation> reservationList){
+    public static FacilityResponseDTO.DetailResultDTO detailResultDTO(Page<Facility> facilityList,
+                                                                      Page<Reservation> reservationList) {
         List<FacilityResponseDTO.DetailDTO> facilityDTO = reservationList.stream()
                 .map((Reservation reservation) -> {
                     Facility facility = reservation.getFacility();
