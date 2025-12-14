@@ -1,45 +1,49 @@
 package com.example.school.facility.domain;
 
-import jakarta.persistence.*;
-import lombok.*;
-
+import com.example.school.global.domain.BaseEntity;
+import com.example.school.university.domain.University;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor
-@Builder
-public class Building {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class Building extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    private Double latitude;
+    private double latitude;
 
-    private Double longitude;
-
-    private String imageURL;
-
-    private String purpose;
-
-    private String item;
-
-    private String caution;
-
-    private String location;
+    private double longitude;
 
     private String label;
 
-    private Boolean inCategory;
+    private String thumbnailImage;
 
+    @ElementCollection
+    private List<String> images = new ArrayList<>();
+
+    @ElementCollection
+    private List<OperationTime> operationTimes = new ArrayList<>();
+    
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school_id")
-    private School school;
-    @OneToMany(mappedBy = "building",cascade = CascadeType.ALL)
-    private List<Facility> facilities = new ArrayList<>();
-
-    @OneToMany(mappedBy = "building",cascade = CascadeType.ALL)
-    private List<BuildingHour> buildingHours = new ArrayList<>();
+    @JoinColumn(name = "university_id")
+    private University university;
 }

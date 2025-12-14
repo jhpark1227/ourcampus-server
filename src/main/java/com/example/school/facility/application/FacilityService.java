@@ -1,21 +1,31 @@
 package com.example.school.facility.application;
 
-import com.example.school.facility.domain.Building;
-import com.example.school.facility.domain.Facility;
-import com.example.school.facility.domain.FacilityTag;
-import com.example.school.facility.domain.Theme;
 import com.example.school.facility.application.dto.FacilityResponseDTO;
+import com.example.school.facility.application.dto.response.FacilityResponse;
+import com.example.school.facility.application.dto.response.FacilityScheduleResponse;
+import com.example.school.facility.domain.Building;
 import com.example.school.facility.domain.BuildingRepository;
+import com.example.school.facility.domain.Facility;
 import com.example.school.facility.domain.FacilityRepository;
+import com.example.school.facility.domain.FacilityTheme;
+import com.example.school.facility.domain.FacilityThemeRepository;
+import com.example.school.facility.domain.Theme;
 import com.example.school.facility.domain.ThemeRepository;
 import com.example.school.global.apiPayload.GeneralException;
 import com.example.school.global.apiPayload.status.ErrorStatus;
-import com.example.school.user.domain.Member;
-import com.example.school.user.domain.UserRepository;
+import com.example.school.global.exception.ApplicationException;
+import com.example.school.member.domain.Member;
+import com.example.school.member.domain.MemberRepository;
+import com.example.school.reservation.application.dto.response.TimeSlotWithBookedResponse;
+import com.example.school.reservation.domain.Reservation;
+import com.example.school.reservation.domain.ReservationRepository;
+import com.example.school.reservation.domain.TimeSlot;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,50 +38,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacilityService {
     private final FacilityRepository facilityRepository;
     private final ThemeRepository themeRepository;
+    private final FacilityThemeRepository facilityThemeRepository;
     private final BuildingRepository buildingRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
+    private final ReservationRepository reservationRepository;
     private final RedisTemplate redisTemplate;
 
     public Facility findById(Long id) {
         return facilityRepository.findById(id).get();
     }
 
-    public FacilityResponseDTO.ListByTheme getListByTheme(Long memberId) {
-        Member member = userRepository.findById(memberId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
-
-        List<Theme> themeEntities = themeRepository.findBySchoolWithFacility(member.getSchool());
-
-        List<Facility> facilityEntities = facilityRepository.findBySchoolAndIsThemeIsTrue(member.getSchool());
-
-        List<FacilityResponseDTO.ThemeWithFacilities> themeList =
-                themeEntities.stream().map(FacilityResponseDTO.ThemeWithFacilities::new).collect(Collectors.toList());
-
-        List<FacilityResponseDTO.FacilityIdAndExtraName> facilityList =
-                facilityEntities.stream().map(FacilityResponseDTO.FacilityIdAndExtraName::new)
-                        .collect(Collectors.toList());
-
-        return new FacilityResponseDTO.ListByTheme(themeList, facilityList);
-    }
-
-    public FacilityResponseDTO.ListByBuilding getListByBuilding(Long memberId) {
-        Member member = userRepository.findById(memberId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
-
-        List<Building> entities = buildingRepository.findBySchoolAndInCategoryWithFacility(member.getSchool());
-
-        List<FacilityResponseDTO.BuildingWithFacilities> list =
-                entities.stream().map(FacilityResponseDTO.BuildingWithFacilities::new)
-                        .collect(Collectors.toList());
-
-        return new FacilityResponseDTO.ListByBuilding(list, list.size());
-    }
-
     public FacilityResponseDTO.Markers getMarkers(Long memberId) {
-        Member member = userRepository.findById(memberId)
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
 
-        List<Building> entities = buildingRepository.findAllBySchool(member.getSchool());
+        List<Building> entities = buildingRepository.findAllByUniversity(member.getUniversity());
 
         List<FacilityResponseDTO.Marker> list = entities.stream()
                 .map(entity -> new FacilityResponseDTO.Marker(entity.getId(), entity.getLabel(), entity.getLatitude(),
@@ -81,24 +62,38 @@ public class FacilityService {
         return new FacilityResponseDTO.Markers(list, list.size());
     }
 
-    public FacilityResponseDTO.Tags getSuggestion(Long memberId) {
-        Member member = userRepository.findById(memberId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+    public List<TimeSlotWithBookedResponse> getTimesByFacilityAndDate(long facilityId, LocalDate date) {
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
+        List<Reservation> reservations = reservationRepository.findByFacilityAndDate(facility, date);
 
-        List<Facility> entities = facilityRepository.findBySchoolAndTagIsNotNull(member.getSchool());
+        List<TimeSlot> timeSlots = facility.getTimeSlots(date);
+        Collection<TimeSlot> availableTimeSlots = facility.getAvailableTimeSlots(date, reservations);
+        return timeSlots.stream()
+                .map(timeSlot -> TimeSlotWithBookedResponse.from(timeSlot, !availableTimeSlots.contains(timeSlot)))
+                .toList();
+    }
 
-        Map<FacilityTag, List<Facility>> map = entities.stream().collect(Collectors.groupingBy(Facility::getTag));
+    public List<FacilityResponse> findFacilitiesByBuildingId(Long buildingId) {
+        Building building = buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.BUILDING_NOT_FOUND));
 
-        List<FacilityResponseDTO.Tag> tags = map.keySet().stream().map(key -> {
-            List<FacilityResponseDTO.FacilityWithTag> list =
-                    map.get(key).stream().map(value -> {
-                        return new FacilityResponseDTO.FacilityWithTag(value.getId(), value.getName(),
-                                value.getImageURL());
-                    }).collect(Collectors.toList());
-            return new FacilityResponseDTO.Tag(key.getTag(), list, list.size());
-        }).collect(Collectors.toList());
+        return facilityRepository.findByBuilding(building)
+                .stream()
+                .map(FacilityResponse::from)
+                .toList();
+    }
 
-        return new FacilityResponseDTO.Tags(tags);
+    public List<FacilityResponse> findFacilitiesByThemeId(Long themeId) {
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.THEME_NOT_FOUND));
+        List<FacilityTheme> facilityThemes = facilityThemeRepository.findByTheme(theme);
+
+        return facilityThemes
+                .stream()
+                .map(FacilityTheme::getFacility)
+                .map(FacilityResponse::from)
+                .toList();
     }
 
     public void saveSearchLog(Long memberId, Long schoolId, String value) {
@@ -130,5 +125,15 @@ public class FacilityService {
             throw new GeneralException(ErrorStatus.BAD_REQUEST);
         }
         return new FacilityResponseDTO.DeleteSearchLog(value);
+    }
+
+    public List<FacilityScheduleResponse> getWeeklySchedule(Long facilityId, LocalDate baseDate) {
+        List<FacilityScheduleResponse> facilitySchedules = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            LocalDate date = baseDate.plusDays(i);
+            List<TimeSlotWithBookedResponse> times = getTimesByFacilityAndDate(facilityId, date);
+            facilitySchedules.add(new FacilityScheduleResponse(times, date));
+        }
+        return facilitySchedules;
     }
 }

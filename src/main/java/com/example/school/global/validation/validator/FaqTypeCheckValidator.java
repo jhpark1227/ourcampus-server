@@ -1,10 +1,10 @@
 package com.example.school.global.validation.validator;
 
 
+import com.example.school.faq.domain.FaqType;
 import com.example.school.global.apiPayload.GeneralException;
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.validation.annotation.CheckFaqType;
-import com.example.school.user.domain.FaqType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.apache.commons.lang3.EnumUtils;

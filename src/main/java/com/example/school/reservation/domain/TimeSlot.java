@@ -1,0 +1,46 @@
+package com.example.school.reservation.domain;
+
+import com.example.school.global.apiPayload.status.ErrorStatus;
+import com.example.school.global.exception.ApplicationException;
+import jakarta.persistence.Embeddable;
+import java.time.Duration;
+import java.time.LocalDateTime;
+
+@Embeddable
+public record TimeSlot(
+        LocalDateTime startTime,
+        LocalDateTime endTime) {
+
+    public TimeSlot {
+        if (!startTime.toLocalDate().equals(endTime.toLocalDate())) {
+            throw new ApplicationException(ErrorStatus.TOO_LONG_TIMESLOT);
+        }
+    }
+
+    public boolean overlaps(TimeSlot other) {
+        return !(
+                endTime.isBefore(other.startTime) ||
+                        endTime.equals(other.startTime) ||
+                        this.startTime.isAfter(other.endTime) ||
+                        this.startTime.equals(other.endTime)
+        );
+    }
+
+    public boolean isDivisibleBy(Duration unitDuration) {
+        Duration thisDuration = Duration.between(startTime, endTime);
+        return thisDuration.getSeconds() % unitDuration.getSeconds() == 0;
+    }
+
+    public boolean isLongerThan(Duration durationLimit) {
+        Duration thisDuration = Duration.between(startTime, endTime);
+        return thisDuration.compareTo(durationLimit) > 0;
+    }
+
+    public LocalDateTime getTimeBefore(Duration duration) {
+        return startTime.minus(duration);
+    }
+
+    public Duration getDuration() {
+        return Duration.between(startTime, endTime);
+    }
+}

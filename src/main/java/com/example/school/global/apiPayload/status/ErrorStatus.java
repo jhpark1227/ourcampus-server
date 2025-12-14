@@ -21,6 +21,11 @@ public enum ErrorStatus {
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_4001", "리뷰가 없습니다."),
 
+    INVALID_HEAD_COUNT(HttpStatus.BAD_REQUEST, "RESERVATION_4001", "잘못된 예약 인원입니다."),
+    TIMESLOT_OVERLAP(HttpStatus.BAD_REQUEST, "RESERVATION_4002", "예약 시간이 겹칩니다."),
+    INVALID_TIMESLOT(HttpStatus.BAD_REQUEST, "RESERVATION_4003", "잘못된 예약 시간입니다."),
+    TOO_LONG_TIMESLOT(HttpStatus.BAD_REQUEST, "RESERVATION_4004", "예약 시간은 다음 날로 넘어갈 수 없습니다."),
+
     // 인증, 인가 관련 에러
     USER_FORMAT_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4002", "사용 불가능한 아이디입니다."),
     NICKNAME_DUPLICATE(HttpStatus.BAD_REQUEST, "AUTH_4003", "사용 불가능한 닉네임입니다."),
@@ -32,17 +37,17 @@ public enum ErrorStatus {
     INVALID_CURRENT_PASSWORD(HttpStatus.BAD_REQUEST, "AUTH_4009", "현재 비밀번호 불일치"),
     USERID_MISMATCH(HttpStatus.BAD_REQUEST, "AUTH_4010", "유저 아이디와 이메일이 일치하지 않습니다."),
     FIND_PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4011", "비밀번호 찾기 실패"),
-    PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4012", "비밀번호가 일치하지 않습니다."),
-    USER_ID_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4013", "ID를 정확하게 입력해 주세요."),
+    LOGIN_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4012", "로그인에 실패했습니다."),
     EMAIL_DUPLICATE(HttpStatus.BAD_REQUEST, "AUTH_4014", "중복된 이메일입니다."),
     USERID_DUPLICATE(HttpStatus.BAD_REQUEST, "AUTH_4015", "중복된 아이디입니다."),
     IDENTIFYNUM_FORMAT_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4016", "주민번호 형식이 맞지 않습니다."),
     SCHOOL_FORMAT_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4017", "학교 형식이 잘못되었습니다."),
 
-
     FACILITY_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE_4001", "시설이 없습니다."),
+    UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND, "UNIVERSITY_4001", "존재하지 않는 대학교입니다."),
     BUILDING_NOT_FOUND(HttpStatus.NOT_FOUND, "BUILDING_4001", "건물이 존재하지 않습니다."),
-    ANNOUNCE_NOT_FOUND(HttpStatus.NOT_FOUND, "ANNOUNCE_4001", "공지사항이 존재하지 않습니다."),
+    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "ANNOUNCE_4001", "공지사항이 존재하지 않습니다."),
+    THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "THEME_4001", "테마가 존재하지 않습니다."),
 
     REFRESHTOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "TOKEN_4001", "해당 RefreshToken이 존재하지 않습니다."),
     SEARCH_CONDITION_ERROR(HttpStatus.BAD_REQUEST, "FAC_4001", "잘못된 검색어입니다.");

@@ -18,7 +18,6 @@ public class ReviewScoreService {
     public void updateScore() {
         List<ScoreDTO> list = facilityRepository.findAllWithReview();
         list.forEach(dto -> {
-            dto.getFacility().updateScore(dto.getNewScore());
         });
     }
 }

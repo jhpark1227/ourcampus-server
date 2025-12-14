@@ -1,11 +1,11 @@
 package com.example.school.facility.domain;
 
+import com.example.school.university.domain.University;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
 public interface SearchRankRepository extends JpaRepository<SearchRank, Long> {
-    void deleteBySchool(School school);
+    void deleteByUniversity(University university);
 
-    List<SearchRank> findBySchool(School school);
+    List<SearchRank> findByUniversity(University university);
 }

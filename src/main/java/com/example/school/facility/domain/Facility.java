@@ -2,8 +2,9 @@ package com.example.school.facility.domain;
 
 import com.example.school.global.domain.BaseEntity;
 import com.example.school.reservation.domain.Reservation;
-import com.example.school.review.domain.Review;
-import jakarta.persistence.CascadeType;
+import com.example.school.reservation.domain.TimeSlot;
+import com.example.school.university.domain.University;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,9 +14,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,50 +36,85 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 public class Facility extends BaseEntity {
+
+    private static final Duration RESERVATION_TIME_UNIT = Duration.ofMinutes(60);
+    private static final Duration RESERVATION_DURATION_LIMIT = RESERVATION_TIME_UNIT.multipliedBy(3);
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL)
-    private List<Reservation> reservationList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL)
-    private List<Review> reviewList = new ArrayList<>();
+    private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school_id")
-    private School school;
+    private String description;
+
+    private String purpose;
+
+    private String equipment;
+
+    private String caution;
+
+    private String location;
+
+    private String thumbnailImage;
+
+    @Enumerated(EnumType.STRING)
+    private FacilityCategory category;
+
+    @ElementCollection
+    @Builder.Default
+    private List<OperationTime> operationTimes = new ArrayList<>();
+
+    @ElementCollection
+    @Builder.Default
+    private List<String> images = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "building_id")
     private Building building;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "theme_id")
-    private Theme theme;
+    @JoinColumn(name = "school_id")
+    private University university;
 
-    private String name;
-    private String extraName;
-    private String imageURL;
-    private String purpose;
-    private String item;
-    private String time;
-    private String caution;
-    private String location;
-    private Double score;
-    private Boolean isTheme;
+    public List<TimeSlot> getTimeSlots(LocalDate date) {
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        for (OperationTime operationTime : operationTimes) {
+            LocalTime operationStartTime = operationTime.startTime();
+            LocalTime operationEndTime = operationTime.endTime();
+            LocalTime reservationStartTime = operationStartTime;
+            while (true) {
+                LocalTime reservationEndTime = reservationStartTime.plus(RESERVATION_TIME_UNIT);
+                if (reservationEndTime.isAfter(operationEndTime) || reservationEndTime.isBefore(reservationStartTime)) {
+                    break;
+                }
+                timeSlots.add(new TimeSlot(LocalDateTime.of(date, reservationStartTime), LocalDateTime.of(date, reservationEndTime)));
+                reservationStartTime = reservationStartTime.plus(RESERVATION_TIME_UNIT);
+            }
+        }
+        return timeSlots;
+    }
 
-    private String description;
+    public Collection<TimeSlot> getAvailableTimeSlots(LocalDate date, List<Reservation> reservations) {
+        return getTimeSlots(date).stream()
+                .filter(timeSlot -> reservations.stream().noneMatch(reservation -> reservation.overlapTimeSlot(timeSlot)))
+                .collect(Collectors.toSet());
+    }
 
-    @Enumerated(EnumType.STRING)
-    private FacilityTag tag;
+    public boolean isValidSlot(LocalDate date, TimeSlot timeSlot) {
+        if (getTimeSlots(date).stream().noneMatch(t -> t.startTime().equals(timeSlot.startTime()))) {
+            return false;
+        }
+        if (!timeSlot.isDivisibleBy(RESERVATION_TIME_UNIT)) {
+            return false;
+        }
+        if (timeSlot.isLongerThan(RESERVATION_DURATION_LIMIT)) {
+            return false;
+        }
+        return true;
+    }
 
-    @Enumerated(EnumType.STRING)
-    private FacilityKeyword keyword;
-
-    @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL)
-    private List<FacilityHour> facilityHours = new ArrayList<>();
-
-    public void updateScore(Double newScore) {
-        score = newScore;
+    public Duration getReservationDurationLimit() {
+        return RESERVATION_DURATION_LIMIT;
     }
 }

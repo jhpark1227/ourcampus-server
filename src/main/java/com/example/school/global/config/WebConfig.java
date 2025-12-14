@@ -10,11 +10,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")
+                .allowedOriginPatterns("*")
                 .allowedMethods("*")
                 .allowedHeaders("*")
-                .exposedHeaders("Cache-Control", "Content-Language", "Content-Type", "Expires", "Last-Modified",
-                        "Pragma")
+                .allowCredentials(true)
+                .exposedHeaders("Cache-Control", "Content-Language", "Content-Type", "Expires",
+                        "Last-Modified", "Pragma")
                 .maxAge(3000);
     }
 }

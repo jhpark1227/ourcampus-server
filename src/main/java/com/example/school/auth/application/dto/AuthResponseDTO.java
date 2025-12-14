@@ -1,9 +1,11 @@
 package com.example.school.auth.application.dto;
 
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class AuthResponseDTO {
 
@@ -13,19 +15,6 @@ public class AuthResponseDTO {
     @Builder
     public static class RegisterResDTO {
         String nickname;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class LoginResDTO {
-        String accessToken;
-        String refreshToken;
-        String userid;
-        Long memberId;
-        private Long accessTokenExpirationTime;
-
     }
 
     @Getter

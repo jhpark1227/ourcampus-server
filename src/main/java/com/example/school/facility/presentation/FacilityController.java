@@ -4,113 +4,72 @@ import com.example.school.facility.application.FacilityQueryService;
 import com.example.school.facility.application.FacilityService;
 import com.example.school.facility.application.LibraryService;
 import com.example.school.facility.application.dto.FacilityResponseDTO;
+import com.example.school.facility.application.dto.response.FacilityResponse;
+import com.example.school.facility.application.dto.response.FacilityScheduleResponse;
+import com.example.school.facility.domain.FacilityCategory;
 import com.example.school.global.apiPayload.ApiResponse;
 import com.example.school.global.validation.annotation.CheckKeyword;
 import com.example.school.global.validation.annotation.CheckPage;
-import com.example.school.global.validation.annotation.ExistKeyword;
-import com.example.school.user.domain.Member;
+import com.example.school.member.domain.Member;
+import com.example.school.reservation.application.dto.response.TimeSlotWithBookedResponse;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("api/v1/facility")
 @RequiredArgsConstructor
 public class FacilityController {
+
     private final FacilityService facilityService;
     private final FacilityQueryService facilityQueryService;
     private final LibraryService libraryService;
 
-    @GetMapping("/category/theme")
-    public ApiResponse<FacilityResponseDTO.ListByTheme> getListByTheme(Authentication auth) {
-        Member member = (Member) auth.getPrincipal();
-
-        FacilityResponseDTO.ListByTheme res = facilityService.getListByTheme(member.getId());
-
-        return ApiResponse.onSuccess(res);
+    @GetMapping("/facilities/{facilityId}")
+    public FacilityResponse getFacility(@PathVariable("facilityId") long id) {
+        return facilityQueryService.findFacilityById(id);
     }
 
-    @GetMapping("/category/building")
-    public ApiResponse<FacilityResponseDTO.ListByBuilding> getListByBuilding(Authentication auth) {
-        Member member = (Member) auth.getPrincipal();
-        FacilityResponseDTO.ListByBuilding res = facilityService.getListByBuilding(member.getId());
-
-        return ApiResponse.onSuccess(res);
+    @GetMapping("/facilities")
+    public List<FacilityResponse> getFacilities(@RequestParam("category") FacilityCategory category) {
+        return facilityQueryService.findFacilityByCategory(category);
     }
 
-    @GetMapping("/map")
-    public ApiResponse<FacilityResponseDTO.Markers> getMarkers(Authentication auth) {
-        Member member = (Member) auth.getPrincipal();
-
-        FacilityResponseDTO.Markers res = facilityService.getMarkers(member.getId());
-
-        return ApiResponse.onSuccess(res);
+    @GetMapping("/me/buildings/{buildingId}/facilities")
+    public List<FacilityResponse> getFacilitiesByBuilding(@PathVariable("buildingId") long buildingId) {
+        return facilityService.findFacilitiesByBuildingId(buildingId);
     }
 
-    @GetMapping("/suggestion")
-    public ApiResponse<FacilityResponseDTO.Tags> getSuggestion(Authentication auth) {
-        Member member = (Member) auth.getPrincipal();
-
-        FacilityResponseDTO.Tags res = facilityService.getSuggestion(member.getId());
-
-        return ApiResponse.onSuccess(res);
+    @GetMapping("/me/themes/{themeId}/facilities")
+    public List<FacilityResponse> getFacilitiesByTheme(@PathVariable("themeId") long themeId) {
+        return facilityService.findFacilitiesByThemeId(themeId);
     }
 
-    @GetMapping("/{facilityId}")
-    public ApiResponse<FacilityResponseDTO.Detail> getDetail(@PathVariable("facilityId") Long facilityId) {
-        FacilityResponseDTO.Detail res = facilityQueryService.getDetail(facilityId);
-
-        return ApiResponse.onSuccess(res);
+    @GetMapping("/facilities/{facilityId}/times")
+    public List<TimeSlotWithBookedResponse> getAvailableTime(@PathVariable(name = "facilityId") long facilityId, LocalDate date) {
+        return facilityService.getTimesByFacilityAndDate(facilityId, date);
     }
 
-    @GetMapping("/building/{buildingId}")
-    public ApiResponse<FacilityResponseDTO.BuildingDetail> getBuildingDetail(
-            @PathVariable("buildingId") Long buildingId) {
-        FacilityResponseDTO.BuildingDetail res = facilityQueryService.getBuildingDetail(buildingId);
-
-        return ApiResponse.onSuccess(res);
-    }
-
-    @GetMapping("/building/{buildingId}/img")
-    public ApiResponse<FacilityResponseDTO.BuildingImages> getBuildingImages(
-            @PathVariable("buildingId") Long facilityId,
-            @RequestParam("page") @CheckPage Integer page
+    @GetMapping("/facilities/{facilityId}/weekly-schedule")
+    public List<FacilityScheduleResponse> getWeeklySchedule(
+            @PathVariable(name = "facilityId") Long facilityId,
+            @RequestParam(name = "date") LocalDate date
     ) {
-        FacilityResponseDTO.BuildingImages res = facilityQueryService.getBuildingImages(facilityId, page);
-
-        return ApiResponse.onSuccess(res);
-    }
-
-    @GetMapping("/{facilityId}/img")
-    public ApiResponse<FacilityResponseDTO.Images> getImages(
-            @PathVariable("facilityId") Long facilityId,
-            @RequestParam("page") @CheckPage Integer page
-    ) {
-        FacilityResponseDTO.Images res = facilityQueryService.getImages(facilityId, page);
-
-        return ApiResponse.onSuccess(res);
+        return facilityService.getWeeklySchedule(facilityId, date);
     }
 
     @GetMapping("/keyword/{keyword}")
     public ApiResponse<FacilityResponseDTO.ListByKeyword> getListByKeyword(
-            @PathVariable("keyword") @ExistKeyword String keyword, Authentication auth) {
+            @PathVariable("keyword") String keyword, Authentication auth) {
         Member member = (Member) auth.getPrincipal();
 
         FacilityResponseDTO.ListByKeyword res = facilityQueryService.getListByKeyword(member.getId(), keyword);
-
-        return ApiResponse.onSuccess(res);
-    }
-
-    @GetMapping("/map/{buildingId}")
-    public ApiResponse<FacilityResponseDTO.DetailOnMarker> getDetailOnMarker(
-            @PathVariable("buildingId") Long buildingId) {
-        FacilityResponseDTO.DetailOnMarker res = facilityQueryService.getDetailOnMarker(buildingId);
 
         return ApiResponse.onSuccess(res);
     }

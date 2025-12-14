@@ -1,27 +1,21 @@
 package com.example.school.reservation.domain;
 
-import com.example.school.user.domain.Member;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.example.school.facility.domain.Facility;
+import com.example.school.member.domain.Member;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    Page<Reservation> findAllByMemberId(Long memberId, PageRequest pageRequest);
 
-    Page<Reservation> findAllByFacilityId(Long facilityId, PageRequest pageRequest);
+    @Query("""
+            SELECT r
+            FROM Reservation r
+            WHERE r.facility = :facility AND
+                         DATE_FORMAT(r.timeSlot.startTime, '%Y-%m-%d') = DATE_FORMAT(str_to_date(:date, '%Y-%m-%d'), '%Y-%m-%d')
+            """)
+    List<Reservation> findByFacilityAndDate(Facility facility, LocalDate date);
 
-    List<Reservation> findAllByMemberId(Long memberId);
-
-    List<Reservation> findAllByFacilityIdAndYearAndMonthAndDay(Long facilityId, String year, String month, String day);
-
-    @Query("select r " +
-            "from Reservation r " +
-            "where r.member=:member " +
-            "and r.year=:year and r.month=:month and r.day=:day " +
-            "and r.start_time<=:hour and r.end_time>:hour")
-    Optional<Reservation> findInUse(Member member, String year, String month, String day, int hour);
+    List<Reservation> findByMember(Member member);
 }

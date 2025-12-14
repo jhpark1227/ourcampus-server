@@ -1,11 +1,11 @@
 package com.example.school.facility.application;
 
-import com.example.school.facility.domain.School;
 import com.example.school.facility.domain.SearchLog;
-import com.example.school.facility.domain.SearchRank;
-import com.example.school.facility.domain.SchoolRepository;
 import com.example.school.facility.domain.SearchLogRepository;
+import com.example.school.facility.domain.SearchRank;
 import com.example.school.facility.domain.SearchRankRepository;
+import com.example.school.university.domain.University;
+import com.example.school.university.domain.UniversityRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -23,22 +23,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class SearchRankService {
     private final RedisTemplate redisTemplate;
     private final SearchLogRepository searchLogRepository;
-    private final SchoolRepository schoolRepository;
+    private final UniversityRepository universityRepository;
     private final SearchRankRepository searchRankRepository;
 
     @Scheduled(cron = "0 0 * * * *")
     public void storeRank() {
         storeCount();
-        List<School> schoolList = schoolRepository.findAll();
-        for (School school : schoolList) {
-            List<SearchLog> list = searchLogRepository.findTop5BySchoolOrderByCountDesc(school);
-            searchRankRepository.deleteBySchool(school);
+        List<University> universityList = universityRepository.findAll();
+        for (University university : universityList) {
+            List<SearchLog> list = searchLogRepository.findTop5ByUniversityOrderByCountDesc(university);
+            searchRankRepository.deleteByUniversity(university);
             for (int i = 0; i < list.size(); i++) {
                 searchRankRepository.save(
                         SearchRank.builder()
                                 .ranking(i + 1)
                                 .value(list.get(i).getValue())
-                                .school(school)
+                                .university(university)
                                 .build()
                 );
             }
@@ -49,14 +49,14 @@ public class SearchRankService {
     public void storeCount() {
         Set<String> schoolList = redisTemplate.keys("School:*");
         for (String key : schoolList) {
-            School school = schoolRepository.findById(getSchoolId(key))
+            University university = universityRepository.findById(getSchoolId(key))
                     .orElseThrow();
 
             Long size = redisTemplate.opsForList().size(key);
             List<String> list = redisTemplate.opsForList().range(key, 0, size - 1);
 
             for (String value : list) {
-                Optional<SearchLog> log = searchLogRepository.findByValueAndSchool(value, school);
+                Optional<SearchLog> log = searchLogRepository.findByValueAndUniversity(value, university);
                 if (log.isPresent()) {
                     log.get().plusCount();
                 } else {
@@ -64,7 +64,7 @@ public class SearchRankService {
                             SearchLog.builder()
                                     .value(value)
                                     .count(1L)
-                                    .school(school)
+                                    .university(university)
                                     .build()
                     );
                 }
@@ -74,7 +74,6 @@ public class SearchRankService {
     }
 
     public Long getSchoolId(String key) {
-        System.out.println(Long.parseLong(key.substring(7)));
         return Long.parseLong(key.substring(7));
     }
 }

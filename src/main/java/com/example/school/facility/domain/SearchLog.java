@@ -1,13 +1,25 @@
 package com.example.school.facility.domain;
 
-import jakarta.persistence.*;
-import lombok.*;
+import com.example.school.university.domain.University;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class SearchLog {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String value;
@@ -15,9 +27,9 @@ public class SearchLog {
     private Long count;
 
     @ManyToOne
-    private School school;
+    private University university;
 
-    public void plusCount(){
-        count+=1;
+    public void plusCount() {
+        count += 1;
     }
 }

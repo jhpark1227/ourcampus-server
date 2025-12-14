@@ -1,13 +1,12 @@
 package com.example.school.reservation.application.dto;
 
-import com.example.school.user.domain.AlertType;
+import com.example.school.reservation.domain.AlarmTiming;
+import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.Set;
 
 public class ReservationResponseDTO {
     //예약 내역
@@ -27,7 +26,7 @@ public class ReservationResponseDTO {
         Integer start_time;
         Integer end_time;
         Boolean back;
-        Set<AlertType> alerts;
+        Set<AlarmTiming> alerts;
 
 
     }
@@ -44,29 +43,6 @@ public class ReservationResponseDTO {
         Long totalElements;
         Boolean isFirst;
         Boolean isLast;
-    }
-
-    //예약 가능한 시간
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class bookedUpDTO {
-        Long id;
-        String year;
-        String month;
-        String day;
-        Integer startTime;
-        Integer endTime;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class bookedUpListDTO {
-        List<bookedUpDTO> bookedUpList;
-        Integer listSize;
     }
 
     @Builder

@@ -1,12 +1,11 @@
 package com.example.school.faq.application.dto;
 
-import com.example.school.faq.domain.FAQ;
+import com.example.school.faq.domain.Faq;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class FAQRes {
 
@@ -33,7 +32,7 @@ public class FAQRes {
         Boolean isFirst;
         Boolean isLast;
 
-        public FAQList(Page<FAQ> entities) {
+        public FAQList(Page<Faq> entities) {
             list = entities.stream().map(entity -> new Detail(entity))
                     .collect(Collectors.toList());
             listSize = entities.getSize();
@@ -49,7 +48,7 @@ public class FAQRes {
         String title;
         String content;
 
-        public Detail(FAQ faq) {
+        public Detail(Faq faq) {
             title = faq.getTitle();
             content = faq.getContent();
         }

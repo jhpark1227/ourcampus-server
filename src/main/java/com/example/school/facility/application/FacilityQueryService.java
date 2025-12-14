@@ -1,32 +1,88 @@
 package com.example.school.facility.application;
 
-import com.example.school.facility.domain.Facility;
 import com.example.school.facility.application.dto.FacilityResponseDTO;
-import com.example.school.facility.application.dto.FacilitySaveResponseDTO;
-import java.util.Optional;
+import com.example.school.facility.application.dto.response.FacilityResponse;
+import com.example.school.facility.domain.Facility;
+import com.example.school.facility.domain.FacilityCategory;
+import com.example.school.facility.domain.FacilityRepository;
+import com.example.school.facility.domain.SearchRank;
+import com.example.school.facility.domain.SearchRankRepository;
+import com.example.school.global.apiPayload.GeneralException;
+import com.example.school.global.apiPayload.status.ErrorStatus;
+import com.example.school.global.exception.ApplicationException;
+import com.example.school.member.domain.Member;
+import com.example.school.member.domain.MemberRepository;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface FacilityQueryService {
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class FacilityQueryService {
 
-    Optional<Facility> findFacility(Long id);
+    private final FacilityRepository facilityRepository;
+    private final MemberRepository memberRepository;
+    private final SearchRankRepository searchRankRepository;
+    private final FacilityService facilityService;
+    private final RedisTemplate redisTemplate;
 
-    Facility createFacility(Long RegionId, FacilitySaveResponseDTO.CreateFacilityResultDTO request);
+    public FacilityResponse findFacilityById(Long id) {
+        Facility facility = facilityRepository.findById(id)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
 
-    //Page<Review> getReviewList(Long FacilityId, Integer page);
-    FacilityResponseDTO.Detail getDetail(Long facilityId);
+        return FacilityResponse.from(facility);
+    }
 
-    FacilityResponseDTO.Images getImages(Long facilityId, Integer page);
+    public FacilityResponseDTO.ListByKeyword getListByKeyword(Long memberId, String keyword) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
 
-    FacilityResponseDTO.ListByKeyword getListByKeyword(Long memberId, String keyword);
+        List<FacilityResponseDTO.FacilityInKeyword> list = List.of();
 
-    FacilityResponseDTO.DetailOnMarker getDetailOnMarker(Long buildingId);
+        return new FacilityResponseDTO.ListByKeyword(list, list.size());
+    }
 
-    FacilityResponseDTO.SearchResults searchFacility(Long memberId, String keyword, Integer page);
+    public FacilityResponseDTO.SearchResults searchFacility(Long memberId, String keyword, Integer page) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
 
-    FacilityResponseDTO.SearchLogList getSearchLog(Long memberId);
+        Pageable pageRequest = PageRequest.of(page - 1, 10);
+        Page<Facility> entities = facilityRepository.findByNameLikeAndUniversity(keyword.trim(), member.getUniversity(),
+                pageRequest);
+        facilityService.saveSearchLog(memberId, member.getUniversity().getId(), keyword);
 
-    FacilityResponseDTO.SearchRankList getSearchRank(Long memberId);
+        return new FacilityResponseDTO.SearchResults(entities);
+    }
 
-    FacilityResponseDTO.BuildingDetail getBuildingDetail(Long buildingId);
+    public FacilityResponseDTO.SearchLogList getSearchLog(Long memberId) {
+        String key = facilityService.searchLogKey(memberId);
+        Set<String> set = redisTemplate.opsForZSet().reverseRange(key, 0, 9);
+        List<String> list = set.stream().collect(Collectors.toList());
 
-    FacilityResponseDTO.BuildingImages getBuildingImages(Long buildingId, Integer page);
+        return new FacilityResponseDTO.SearchLogList(list, list.size());
+    }
+
+    public FacilityResponseDTO.SearchRankList getSearchRank(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        List<SearchRank> entities = searchRankRepository.findByUniversity(member.getUniversity());
+
+        return new FacilityResponseDTO.SearchRankList(entities);
+    }
+
+    public List<FacilityResponse> findFacilityByCategory(FacilityCategory category) {
+        List<Facility> facilities = facilityRepository.findByCategory(category);
+        return facilities.stream()
+                .map(FacilityResponse::from)
+                .toList();
+    }
 }

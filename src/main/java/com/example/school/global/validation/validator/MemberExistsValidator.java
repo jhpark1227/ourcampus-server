@@ -3,8 +3,8 @@ package com.example.school.global.validation.validator;
 
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.validation.annotation.ExistMember;
-import com.example.school.user.application.UserQueryService;
-import com.example.school.user.domain.Member;
+import com.example.school.member.application.MemberQueryService;
+import com.example.school.member.domain.Member;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.Optional;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MemberExistsValidator implements ConstraintValidator<ExistMember, Long> {
 
-    private final UserQueryService userQueryService;
+    private final MemberQueryService memberQueryService;
 
     @Override
     public void initialize(ExistMember constraintAnnotation) {
@@ -24,7 +24,7 @@ public class MemberExistsValidator implements ConstraintValidator<ExistMember, L
 
     @Override
     public boolean isValid(Long value, ConstraintValidatorContext context) {
-        Optional<Member> target = userQueryService.findMember(value);
+        Optional<Member> target = memberQueryService.findMemberById(value);
 
         if (target.isEmpty()) {
             context.disableDefaultConstraintViolation();
