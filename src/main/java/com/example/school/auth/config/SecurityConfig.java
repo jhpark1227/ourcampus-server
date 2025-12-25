@@ -1,6 +1,6 @@
 package com.example.school.auth.config;
 
-import com.example.school.auth.application.JwtUtils;
+import com.example.school.auth.application.JwtProvider;
 import com.example.school.auth.presentation.JwtAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtUtils jwtUtils;
+    private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
 
     @Bean
@@ -45,6 +45,6 @@ public class SecurityConfig {
     }
 
     private JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtUtils, objectMapper);
+        return new JwtAuthenticationFilter(jwtProvider, objectMapper);
     }
 }

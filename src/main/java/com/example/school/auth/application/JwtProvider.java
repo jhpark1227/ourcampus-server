@@ -9,19 +9,25 @@ import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import lombok.RequiredArgsConstructor;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
-public final class JwtUtils {
+public final class JwtProvider {
 
-    private static final String SECRET_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTcwNjAxMDkwOSwiaWF0IjoxNzA2MDEwOTA5fQ.sZZKJaY_DQ-_LTVgcOQ44GrqaOH_9GgboZd85YkgsMM";
-    private static final long TOKEN_VALID_TIME = 1000L * 120 * 5 * 12; // 2시간
-    private static final long REFRESH_TOKEN_VALID_TIME = 1000L * 60 * 60 * 144;
+    private final String SECRET_KEY;
+    private final long ACCESS_TOKEN_EXPIRATION_MILLIS;
 
+    public JwtProvider(
+            @Value("${auth.jwt.secret-key}") String secretKey,
+            @Value("${auth.jwt.access-token-expiration-minutes}") long accessTokenExpirationMinutes
+    ) {
+        this.SECRET_KEY = secretKey;
+        this.ACCESS_TOKEN_EXPIRATION_MILLIS = TimeUnit.MINUTES.toMillis(accessTokenExpirationMinutes);
+    }
 
     public Key getSigningKey(String secretKey) {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -44,7 +50,7 @@ public final class JwtUtils {
                 .claim("memberId", member.getId())
                 .claim("universityId", member.getUniversity().getId())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALID_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_MILLIS))
                 .signWith(getSigningKey(SECRET_KEY), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -54,7 +60,7 @@ public final class JwtUtils {
                 .claim("memberId", member.getId())
                 .claim("universityId", member.getUniversity().getId())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALID_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_MILLIS))
                 .signWith(getSigningKey(SECRET_KEY), SignatureAlgorithm.HS256)
                 .compact();
     }

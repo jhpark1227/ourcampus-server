@@ -15,8 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,6 +37,14 @@ public class ReservationController {
                 .body(response);
     }
 
+    @GetMapping("/reservations/{reservationId}")
+    public ReservationResponse getReservation(
+            @PathVariable("reservationId") Long reservationId,
+            @AuthenticationPrincipal MemberPrincipal memberPrincipal
+    ) {
+        return reservationService.findReservationById(reservationId, memberPrincipal);
+    }
+
     @GetMapping("/reservations/alert-options")
     public List<AlertOptionsResponse> getAlertOptions() {
         return Arrays.stream(AlarmTiming.values())
@@ -43,7 +53,10 @@ public class ReservationController {
     }
 
     @GetMapping("/me/reservations")
-    public List<ReservationResponse> getMyReservations(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        return reservationService.findReservationsByMemberId(memberPrincipal.memberId());
+    public List<ReservationResponse> getMyReservations(
+            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @RequestParam(name = "onlyPendingReview", required = false) boolean onlyPendingReview
+    ) {
+        return reservationService.findReservationsByMemberId(memberPrincipal.memberId(), onlyPendingReview);
     }
 }

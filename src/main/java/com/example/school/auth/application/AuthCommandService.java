@@ -13,11 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AuthCommandService {
     private final MemberRepository memberRepository;
-    private final JwtUtils jwtUtils;
+    private final JwtProvider jwtProvider;
 
     public Boolean withdrawUser(String accessToken) {
-        String resolveToken = jwtUtils.resolveToken(accessToken);
-        String email = jwtUtils.getEmailInToken(resolveToken);
+        String resolveToken = jwtProvider.resolveToken(accessToken);
+        String email = jwtProvider.getEmailInToken(resolveToken);
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
             throw new GeneralException(ErrorStatus.MEMBER_NOT_FOUND);
         });
@@ -27,9 +27,9 @@ public class AuthCommandService {
     }
 
     public void logout(String accessToken) {
-        String resolvedToken = jwtUtils.resolveToken(accessToken);
+        String resolvedToken = jwtProvider.resolveToken(accessToken);
 
-        String email = jwtUtils.getEmailInToken(resolvedToken);
+        String email = jwtProvider.getEmailInToken(resolvedToken);
     }
 
 }

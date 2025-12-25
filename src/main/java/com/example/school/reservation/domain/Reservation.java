@@ -66,6 +66,13 @@ public class Reservation extends BaseEntity {
         return this.timeSlot.overlaps(timeSlot);
     }
 
+    public void validateOwner(long memberId) {
+        if (member.hasId(memberId)) {
+            return;
+        }
+        throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
+    }
+
     public LocalDateTime calculateScheduledTime(AlarmTiming alarmTiming) {
         return timeSlot.getTimeBefore(alarmTiming.getDuration());
     }

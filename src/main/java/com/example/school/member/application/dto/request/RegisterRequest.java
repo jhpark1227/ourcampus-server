@@ -9,6 +9,7 @@ public record RegisterRequest(
         String password,
         @NotBlank(message = "이름을 입력해 주세요.")
         String name,
+        String profileImageUrl,
         long universityId
 ) {
 }

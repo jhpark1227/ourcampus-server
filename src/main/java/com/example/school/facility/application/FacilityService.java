@@ -14,8 +14,6 @@ import com.example.school.facility.domain.ThemeRepository;
 import com.example.school.global.apiPayload.GeneralException;
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.exception.ApplicationException;
-import com.example.school.member.domain.Member;
-import com.example.school.member.domain.MemberRepository;
 import com.example.school.reservation.application.dto.response.TimeSlotWithBookedResponse;
 import com.example.school.reservation.domain.Reservation;
 import com.example.school.reservation.domain.ReservationRepository;
@@ -26,7 +24,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -40,27 +37,8 @@ public class FacilityService {
     private final ThemeRepository themeRepository;
     private final FacilityThemeRepository facilityThemeRepository;
     private final BuildingRepository buildingRepository;
-    private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
     private final RedisTemplate redisTemplate;
-
-    public Facility findById(Long id) {
-        return facilityRepository.findById(id).get();
-    }
-
-    public FacilityResponseDTO.Markers getMarkers(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
-
-        List<Building> entities = buildingRepository.findAllByUniversity(member.getUniversity());
-
-        List<FacilityResponseDTO.Marker> list = entities.stream()
-                .map(entity -> new FacilityResponseDTO.Marker(entity.getId(), entity.getLabel(), entity.getLatitude(),
-                        entity.getLongitude()))
-                .collect(Collectors.toList());
-
-        return new FacilityResponseDTO.Markers(list, list.size());
-    }
 
     public List<TimeSlotWithBookedResponse> getTimesByFacilityAndDate(long facilityId, LocalDate date) {
         Facility facility = facilityRepository.findById(facilityId)

@@ -20,6 +20,6 @@ public class FacilityHashTag {
     private Facility facility;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_id")
+    @JoinColumn(name = "hash_tag_id")
     private HashTag hashTag;
 }

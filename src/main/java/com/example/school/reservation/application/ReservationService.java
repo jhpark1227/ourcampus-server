@@ -75,13 +75,26 @@ public class ReservationService {
         }
     }
 
-    public List<ReservationResponse> findReservationsByMemberId(Long memberId) {
+    public List<ReservationResponse> findReservationsByMemberId(Long memberId, boolean onlyPendingReview) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
-        List<Reservation> reservations = reservationRepository.findByMember(member);
-
-        return reservations.stream()
+        if (onlyPendingReview) {
+            return reservationRepository.findReservationWithoutReviewByMember(member)
+                    .stream()
+                    .map(ReservationResponse::from)
+                    .toList();
+        }
+        return reservationRepository.findByMember(member)
+                .stream()
                 .map(ReservationResponse::from)
                 .toList();
+    }
+
+    public ReservationResponse findReservationById(Long reservationId, MemberPrincipal memberPrincipal) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.RESERVATION_NOT_FOUND));
+        reservation.validateOwner(memberPrincipal.memberId());
+
+        return ReservationResponse.from(reservation);
     }
 }

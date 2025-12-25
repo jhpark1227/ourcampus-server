@@ -8,8 +8,6 @@ import com.example.school.facility.application.dto.response.FacilityResponse;
 import com.example.school.facility.application.dto.response.FacilityScheduleResponse;
 import com.example.school.facility.domain.FacilityCategory;
 import com.example.school.global.apiPayload.ApiResponse;
-import com.example.school.global.validation.annotation.CheckKeyword;
-import com.example.school.global.validation.annotation.CheckPage;
 import com.example.school.member.domain.Member;
 import com.example.school.reservation.application.dto.response.TimeSlotWithBookedResponse;
 import java.time.LocalDate;
@@ -52,7 +50,9 @@ public class FacilityController {
     }
 
     @GetMapping("/facilities/{facilityId}/times")
-    public List<TimeSlotWithBookedResponse> getAvailableTime(@PathVariable(name = "facilityId") long facilityId, LocalDate date) {
+    public List<TimeSlotWithBookedResponse> getAvailableTime(
+            @PathVariable("facilityId") long facilityId, @RequestParam LocalDate date
+    ) {
         return facilityService.getTimesByFacilityAndDate(facilityId, date);
     }
 
@@ -76,8 +76,8 @@ public class FacilityController {
 
     @GetMapping("/search")
     public ApiResponse<FacilityResponseDTO.SearchResults> searchFacility(
-            @RequestParam("query") @CheckKeyword String keyword,
-            @RequestParam("page") @CheckPage Integer page,
+            @RequestParam("query") String keyword,
+            @RequestParam("page") Integer page,
             Authentication auth
     ) {
         Member member = (Member) auth.getPrincipal();
@@ -112,15 +112,6 @@ public class FacilityController {
         Member member = (Member) auth.getPrincipal();
 
         FacilityResponseDTO.DeleteSearchLog res = facilityService.deleteSearchLog(member.getId(), value);
-
-        return ApiResponse.onSuccess(res);
-    }
-
-    @GetMapping("/search-rank")
-    public ApiResponse<FacilityResponseDTO.SearchRankList> getSearchRank(Authentication auth) {
-        Member member = (Member) auth.getPrincipal();
-
-        FacilityResponseDTO.SearchRankList res = facilityQueryService.getSearchRank(member.getId());
 
         return ApiResponse.onSuccess(res);
     }

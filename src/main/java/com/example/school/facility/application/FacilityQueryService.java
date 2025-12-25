@@ -5,8 +5,6 @@ import com.example.school.facility.application.dto.response.FacilityResponse;
 import com.example.school.facility.domain.Facility;
 import com.example.school.facility.domain.FacilityCategory;
 import com.example.school.facility.domain.FacilityRepository;
-import com.example.school.facility.domain.SearchRank;
-import com.example.school.facility.domain.SearchRankRepository;
 import com.example.school.global.apiPayload.GeneralException;
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.exception.ApplicationException;
@@ -30,7 +28,6 @@ public class FacilityQueryService {
 
     private final FacilityRepository facilityRepository;
     private final MemberRepository memberRepository;
-    private final SearchRankRepository searchRankRepository;
     private final FacilityService facilityService;
     private final RedisTemplate redisTemplate;
 
@@ -68,15 +65,6 @@ public class FacilityQueryService {
         List<String> list = set.stream().collect(Collectors.toList());
 
         return new FacilityResponseDTO.SearchLogList(list, list.size());
-    }
-
-    public FacilityResponseDTO.SearchRankList getSearchRank(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
-
-        List<SearchRank> entities = searchRankRepository.findByUniversity(member.getUniversity());
-
-        return new FacilityResponseDTO.SearchRankList(entities);
     }
 
     public List<FacilityResponse> findFacilityByCategory(FacilityCategory category) {

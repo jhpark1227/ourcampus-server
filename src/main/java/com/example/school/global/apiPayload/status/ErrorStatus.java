@@ -42,15 +42,20 @@ public enum ErrorStatus {
     USERID_DUPLICATE(HttpStatus.BAD_REQUEST, "AUTH_4015", "중복된 아이디입니다."),
     IDENTIFYNUM_FORMAT_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4016", "주민번호 형식이 맞지 않습니다."),
     SCHOOL_FORMAT_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4017", "학교 형식이 잘못되었습니다."),
+    PERMISSION_ERROR(HttpStatus.FORBIDDEN, "AUTH_4018", "권한이 없습니다."),
 
     FACILITY_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE_4001", "시설이 없습니다."),
     UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND, "UNIVERSITY_4001", "존재하지 않는 대학교입니다."),
     BUILDING_NOT_FOUND(HttpStatus.NOT_FOUND, "BUILDING_4001", "건물이 존재하지 않습니다."),
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "ANNOUNCE_4001", "공지사항이 존재하지 않습니다."),
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "THEME_4001", "테마가 존재하지 않습니다."),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION_4001", "예약이 존재하지 않습니다."),
+    IMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "IMAGE_4001", "이미지가 존재하지 않습니다."),
 
     REFRESHTOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "TOKEN_4001", "해당 RefreshToken이 존재하지 않습니다."),
-    SEARCH_CONDITION_ERROR(HttpStatus.BAD_REQUEST, "FAC_4001", "잘못된 검색어입니다.");
+    SEARCH_CONDITION_ERROR(HttpStatus.BAD_REQUEST, "FAC_4001", "잘못된 검색어입니다."),
+    STAR_RATING_RANGE(HttpStatus.BAD_REQUEST, "REVIEW_4001", "별점은 1점 이상 5점 이하의 정수입니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;

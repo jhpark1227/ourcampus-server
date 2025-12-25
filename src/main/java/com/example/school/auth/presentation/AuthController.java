@@ -2,22 +2,17 @@ package com.example.school.auth.presentation;
 
 import com.example.school.auth.application.AuthCommandService;
 import com.example.school.auth.application.AuthQueryService;
-import com.example.school.auth.application.dto.AuthResponseDTO;
 import com.example.school.auth.application.dto.request.LoginRequest;
 import com.example.school.auth.application.dto.response.LoginResponse;
 import com.example.school.global.apiPayload.ApiResponse;
-import com.example.school.global.validation.annotation.CheckKeyword;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -47,14 +42,5 @@ public class AuthController {
     public ApiResponse<String> withdrawUser(@RequestHeader("Authorization") String accessToken) {
         authCommandService.withdrawUser(accessToken);
         return ApiResponse.onSuccess("회원탈퇴 처리 되었습니다.");
-    }
-
-    @GetMapping("/search-schools")
-    public ApiResponse<List<AuthResponseDTO.SchoolResDTO>> searchSchools(
-            @RequestParam("query") @CheckKeyword String keyword) {
-
-        List<AuthResponseDTO.SchoolResDTO> resList = authQueryService.searchSchool(keyword);
-
-        return ApiResponse.onSuccess(resList);
     }
 }

@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Embeddable
 public record TimeSlot(
         LocalDateTime startTime,
-        LocalDateTime endTime) {
-
+        LocalDateTime endTime
+) {
     public TimeSlot {
         if (!startTime.toLocalDate().equals(endTime.toLocalDate())) {
             throw new ApplicationException(ErrorStatus.TOO_LONG_TIMESLOT);

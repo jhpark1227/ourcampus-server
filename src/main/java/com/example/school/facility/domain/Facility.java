@@ -21,6 +21,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -116,5 +117,9 @@ public class Facility extends BaseEntity {
 
     public Duration getReservationDurationLimit() {
         return RESERVATION_DURATION_LIMIT;
+    }
+
+    public Optional<Building> getBuilding() {
+        return Optional.ofNullable(building);
     }
 }

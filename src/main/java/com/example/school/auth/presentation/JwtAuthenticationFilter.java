@@ -1,6 +1,6 @@
 package com.example.school.auth.presentation;
 
-import com.example.school.auth.application.JwtUtils;
+import com.example.school.auth.application.JwtProvider;
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.exception.ApplicationException;
 import com.example.school.global.exception.ErrorResponse;
@@ -21,7 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtUtils jwtUtils;
+    private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             String accessToken = extractAccessToken(request);
-            jwtUtils.validateToken(accessToken);
+            jwtProvider.validateToken(accessToken);
             SecurityContextHolder.getContext().setAuthentication(getAuthentication(accessToken));
         } catch (Exception e) {
             handleAuthenticationError(response, e);
@@ -66,7 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private Authentication getAuthentication(String token) {
-        return new UsernamePasswordAuthenticationToken(jwtUtils.getMemberPrincipal(token), "",
+        return new UsernamePasswordAuthenticationToken(jwtProvider.getMemberPrincipal(token), "",
                 new HashSet<>());
     }
 }

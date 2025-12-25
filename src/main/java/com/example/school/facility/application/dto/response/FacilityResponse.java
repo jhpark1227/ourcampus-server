@@ -35,7 +35,7 @@ public record FacilityResponse(
                         .stream()
                         .map(OperationTimeResponse::from)
                         .toList(),
-                facility.getBuilding() == null ? null : BuildingResponse.from(facility.getBuilding()),
+                facility.getBuilding().isPresent() ? BuildingResponse.from(facility.getBuilding().get()) : null,
                 facility.getReservationDurationLimit().toMinutes()
         );
     }

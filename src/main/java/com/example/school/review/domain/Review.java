@@ -3,7 +3,8 @@ package com.example.school.review.domain;
 import com.example.school.facility.domain.Facility;
 import com.example.school.global.domain.BaseEntity;
 import com.example.school.member.domain.Member;
-import jakarta.persistence.CascadeType;
+import com.example.school.reservation.domain.Reservation;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,23 +12,29 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 public class Review extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String content;
+
+    private StarRating starRating;
+
+    @ElementCollection
+    private List<String> images = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -35,13 +42,17 @@ public class Review extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "facility_id")
     private Facility facility;
-    
-    private String title;
 
-    private Float score;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
 
-    private String body;
-
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
-    private List<ReviewImage> reviewImages;
+    public Review(String content, StarRating starRating, List<String> images, Reservation reservation) {
+        this.content = content;
+        this.starRating = starRating;
+        this.images = images;
+        this.reservation = reservation;
+        this.member = reservation.getMember();
+        this.facility = reservation.getFacility();
+    }
 }

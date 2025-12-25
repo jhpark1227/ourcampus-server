@@ -1,8 +1,6 @@
 package com.example.school.facility.application.dto;
 
 import com.example.school.facility.domain.Facility;
-import com.example.school.facility.domain.SearchRank;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -12,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 public class FacilityResponseDTO {
-    //사용자 이용한 시설물 정보 DTO
+
     @Builder
     @Getter
     @NoArgsConstructor
@@ -31,30 +29,6 @@ public class FacilityResponseDTO {
         Integer startTime;
         Integer endTime;
         Integer duration;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DetailResultDTO {
-        List<DetailDTO> resultList;
-        Integer listSize;
-        Integer totalPage;
-        Long totalElements;
-        Boolean isFirst;
-        Boolean isLast;
-    }
-
-    @Getter
-    public static class FacilityIdAndName {
-        Long id;
-        String name;
-
-        public FacilityIdAndName(Facility entity) {
-            id = entity.getId();
-            name = entity.getName();
-        }
     }
 
     @Getter
@@ -125,22 +99,6 @@ public class FacilityResponseDTO {
 
     @Getter
     @AllArgsConstructor
-    public static class DetailOnMarker {
-        String name;
-        String imageURL;
-        List<BuildingHourDTO> hours;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class BuildingHourDTO {
-        String name;
-        LocalTime openingTime;
-        LocalTime closingTime;
-    }
-
-    @Getter
-    @AllArgsConstructor
     public static class SearchResults {
         List<SearchResult> list;
         Integer listSize;
@@ -172,7 +130,7 @@ public class FacilityResponseDTO {
             id = entity.getId();
             name = entity.getName();
             imageURL = entity.getThumbnailImage();
-            buildingName = entity.getBuilding().getName();
+            buildingName = entity.getBuilding().get().getName();
         }
     }
 
@@ -201,26 +159,6 @@ public class FacilityResponseDTO {
     @Getter
     @AllArgsConstructor
     public static class DeleteSearchLog {
-        String value;
-    }
-
-    @Getter
-    public static class SearchRankList {
-        List<SearchRankDTO> list;
-        int count;
-
-        public SearchRankList(List<SearchRank> entities) {
-            list = entities.stream().map(entity -> {
-                return new SearchRankDTO(entity.getRanking(), entity.getValue());
-            }).collect(Collectors.toList());
-            count = list.size();
-        }
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class SearchRankDTO {
-        int ranking;
         String value;
     }
 }

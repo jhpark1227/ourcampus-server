@@ -29,7 +29,7 @@ public class AuthQueryService {
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtils jwtUtils;
+    private final JwtProvider jwtProvider;
 
     public LoginResponse login(LoginRequest request) {
         Member member = memberRepository.findByEmail(request.email())
@@ -39,8 +39,8 @@ public class AuthQueryService {
             throw new ApplicationException(ErrorStatus.LOGIN_ERROR);
         }
 
-        String accessToken = jwtUtils.createAccessToken(member);
-        String refreshToken = jwtUtils.createRefreshToken(member);
+        String accessToken = jwtProvider.createAccessToken(member);
+        String refreshToken = jwtProvider.createRefreshToken(member);
         refreshTokenRepository.save(new RefreshToken(refreshToken, member));
 
         return new LoginResponse(accessToken, refreshToken);
@@ -48,7 +48,7 @@ public class AuthQueryService {
 
     @Transactional
     public Boolean changePassword(AuthRequestDTO.ChangePasswordReqDTO request) {
-        String email = jwtUtils.getEmailInToken(request.getToken());
+        String email = jwtProvider.getEmailInToken(request.getToken());
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> {
             throw new GeneralException(ErrorStatus.MEMBER_NOT_FOUND);
         });
