@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class MemberService {
 
@@ -25,7 +25,6 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final FileManager fileManager;
 
-    @Transactional
     public void register(RegisterRequest request) {
         validateDuplicateEmail(request.email());
         validateImageUrl(request.profileImageUrl());

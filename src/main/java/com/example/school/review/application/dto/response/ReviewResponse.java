@@ -2,6 +2,7 @@ package com.example.school.review.application.dto.response;
 
 import com.example.school.facility.domain.Building;
 import com.example.school.facility.domain.Facility;
+import com.example.school.member.domain.Member;
 import com.example.school.review.domain.Review;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +14,7 @@ public record ReviewResponse(
         int startRating,
         List<String> images,
         LocalDateTime createdAt,
+        MemberResponse member,
         FacilityResponse facility
 ) {
     public static ReviewResponse from(Review review) {
@@ -30,8 +32,18 @@ public record ReviewResponse(
                 review.getStarRating().value(),
                 review.getImages(),
                 review.getCreatedAt(),
+                MemberResponse.from(review.getMember()),
                 facilityResponse
         );
+    }
+
+    private record MemberResponse(
+            String name,
+            String profileImageUrl
+    ) {
+        private static MemberResponse from(Member member) {
+            return new MemberResponse(member.getName(), member.getProfileImage());
+        }
     }
 
     private record FacilityResponse(

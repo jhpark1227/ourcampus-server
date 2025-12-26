@@ -1,5 +1,6 @@
 package com.example.school.facility.domain;
 
+import com.example.school.university.domain.University;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,5 +17,5 @@ public interface FacilityRepository extends JpaRepository<Facility, Long> {
 
     List<Facility> findByBuilding(Building building);
 
-    List<Facility> findByCategory(FacilityCategory category);
+    List<Facility> findByUniversityAndCategory(University university, FacilityCategory category);
 }

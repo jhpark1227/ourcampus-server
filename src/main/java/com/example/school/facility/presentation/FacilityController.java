@@ -1,5 +1,6 @@
 package com.example.school.facility.presentation;
 
+import com.example.school.auth.domain.MemberPrincipal;
 import com.example.school.facility.application.FacilityQueryService;
 import com.example.school.facility.application.FacilityService;
 import com.example.school.facility.application.LibraryService;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,8 +37,11 @@ public class FacilityController {
     }
 
     @GetMapping("/facilities")
-    public List<FacilityResponse> getFacilities(@RequestParam("category") FacilityCategory category) {
-        return facilityQueryService.findFacilityByCategory(category);
+    public List<FacilityResponse> getFacilities(
+            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @RequestParam("category") FacilityCategory category
+    ) {
+        return facilityQueryService.findFacilityByUniversityAndCategory(memberPrincipal.universityId(), category);
     }
 
     @GetMapping("/me/buildings/{buildingId}/facilities")

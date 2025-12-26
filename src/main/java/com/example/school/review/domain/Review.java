@@ -1,7 +1,9 @@
 package com.example.school.review.domain;
 
 import com.example.school.facility.domain.Facility;
+import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.domain.BaseEntity;
+import com.example.school.global.exception.ApplicationException;
 import com.example.school.member.domain.Member;
 import com.example.school.reservation.domain.Reservation;
 import jakarta.persistence.ElementCollection;
@@ -54,5 +56,18 @@ public class Review extends BaseEntity {
         this.reservation = reservation;
         this.member = reservation.getMember();
         this.facility = reservation.getFacility();
+    }
+
+    public void validateOwner(Member member) {
+        if (this.member.equals(member)) {
+            return;
+        }
+        throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
+    }
+
+    public void modify(String content, StarRating starRating, List<String> images) {
+        this.content = content;
+        this.starRating = starRating;
+        this.images = images;
     }
 }

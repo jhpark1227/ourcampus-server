@@ -42,7 +42,7 @@ public class ReservationController {
             @PathVariable("reservationId") Long reservationId,
             @AuthenticationPrincipal MemberPrincipal memberPrincipal
     ) {
-        return reservationService.findReservationById(reservationId, memberPrincipal);
+        return reservationService.findReservationById(reservationId, memberPrincipal.memberId());
     }
 
     @GetMapping("/reservations/alert-options")

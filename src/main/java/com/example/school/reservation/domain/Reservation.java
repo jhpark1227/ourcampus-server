@@ -66,8 +66,8 @@ public class Reservation extends BaseEntity {
         return this.timeSlot.overlaps(timeSlot);
     }
 
-    public void validateOwner(long memberId) {
-        if (member.hasId(memberId)) {
+    public void validateOwner(Member member) {
+        if (this.member.equals(member)) {
             return;
         }
         throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);

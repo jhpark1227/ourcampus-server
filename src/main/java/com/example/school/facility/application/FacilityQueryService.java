@@ -10,6 +10,8 @@ import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.exception.ApplicationException;
 import com.example.school.member.domain.Member;
 import com.example.school.member.domain.MemberRepository;
+import com.example.school.university.domain.University;
+import com.example.school.university.domain.UniversityRepository;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,6 +31,7 @@ public class FacilityQueryService {
     private final FacilityRepository facilityRepository;
     private final MemberRepository memberRepository;
     private final FacilityService facilityService;
+    private final UniversityRepository universityRepository;
     private final RedisTemplate redisTemplate;
 
     public FacilityResponse findFacilityById(Long id) {
@@ -67,8 +70,10 @@ public class FacilityQueryService {
         return new FacilityResponseDTO.SearchLogList(list, list.size());
     }
 
-    public List<FacilityResponse> findFacilityByCategory(FacilityCategory category) {
-        List<Facility> facilities = facilityRepository.findByCategory(category);
+    public List<FacilityResponse> findFacilityByUniversityAndCategory(Long universityId, FacilityCategory category) {
+        University university = universityRepository.findById(universityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
+        List<Facility> facilities = facilityRepository.findByUniversityAndCategory(university, category);
         return facilities.stream()
                 .map(FacilityResponse::from)
                 .toList();

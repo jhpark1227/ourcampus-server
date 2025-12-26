@@ -1,14 +1,20 @@
 package com.example.school.faq.application.dto.response;
 
 import com.example.school.faq.domain.Faq;
-import java.time.LocalDate;
+import com.example.school.faq.domain.FaqType;
 
 public record FaqResponse(
         Long id,
-        String title,
-        LocalDate date
+        String question,
+        String answer,
+        FaqType type
 ) {
     public static FaqResponse from(Faq faq) {
-        return new FaqResponse(faq.getId(), faq.getTitle(), faq.getCreatedAt().toLocalDate());
+        return new FaqResponse(
+                faq.getId(),
+                faq.getQuestion(),
+                faq.getAnswer(),
+                faq.getType()
+        );
     }
 }

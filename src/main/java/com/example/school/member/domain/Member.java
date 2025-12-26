@@ -64,8 +64,4 @@ public class Member extends BaseEntity {
     public void changePassword(PasswordEncoder passwordEncoder, Password newPassword) {
         this.password = passwordEncoder.encode(newPassword);
     }
-
-    public boolean hasId(long memberId) {
-        return id == memberId;
-    }
 }

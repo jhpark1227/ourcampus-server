@@ -1,11 +1,10 @@
 package com.example.school.faq.application;
 
-import com.example.school.faq.application.dto.FAQRes;
-import com.example.school.faq.domain.Faq;
+import com.example.school.faq.application.dto.response.FaqResponse;
 import com.example.school.faq.domain.FaqRepository;
 import com.example.school.faq.domain.FaqType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +16,11 @@ public class FaqService {
 
     private final FaqRepository faqRepository;
 
-    public FAQRes.FAQList findFaqs(FaqType type, Pageable page) {
-        Page<Faq> entities = faqRepository.findByType(type, page);
-
-        return new FAQRes.FAQList(entities);
+    public List<FaqResponse> findFaqs(FaqType type, Pageable pageable) {
+        System.out.println(pageable.getPageSize());
+        return faqRepository.findByType(type, pageable)
+                .stream()
+                .map(FaqResponse::from)
+                .toList();
     }
 }

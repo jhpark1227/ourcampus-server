@@ -19,24 +19,19 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final FacilityRepository facilityRepository;
     private final ReservationAlarmRepository reservationAlarmRepository;
-    private final SimpMessagingTemplate template;
 
-    @Transactional
     public ReservationCreateResponse createReservation(ReservationRequest request, MemberPrincipal memberPrincipal) {
         Facility facility = facilityRepository.findById(request.facilityId())
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
@@ -90,10 +85,12 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse findReservationById(Long reservationId, MemberPrincipal memberPrincipal) {
+    public ReservationResponse findReservationById(Long reservationId, Long memberId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.RESERVATION_NOT_FOUND));
-        reservation.validateOwner(memberPrincipal.memberId());
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow((() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND)));
+        reservation.validateOwner(member);
 
         return ReservationResponse.from(reservation);
     }

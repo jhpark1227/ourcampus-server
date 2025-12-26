@@ -1,30 +1,36 @@
 package com.example.school.faq.presentation;
 
 import com.example.school.faq.application.FaqService;
-import com.example.school.faq.application.dto.FAQRes;
+import com.example.school.faq.application.dto.response.FaqResponse;
 import com.example.school.faq.domain.FaqType;
-import com.example.school.global.apiPayload.ApiResponse;
+import com.example.school.faq.presentation.response.FaqTypeResponse;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequiredArgsConstructor
 public class FaqController {
 
-    private final FaqService FAQService;
+    private final FaqService faqService;
 
-    @GetMapping("list")
-    public ApiResponse<FAQRes.FAQList> getFaqs(
+    @GetMapping("/faqs")
+    public List<FaqResponse> getFaqs(
             @RequestParam(name = "type", required = false) FaqType type,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        FAQRes.FAQList res = FAQService.findFaqs(type, pageable);
+            @PageableDefault Pageable page
+    ) {
+        return faqService.findFaqs(type, page);
+    }
 
-        return ApiResponse.onSuccess(res);
+    @GetMapping("/faqs/types")
+    public List<FaqTypeResponse> getTypes() {
+        return Arrays.stream(FaqType.values())
+                .map(FaqTypeResponse::from)
+                .toList();
     }
 }

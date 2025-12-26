@@ -54,7 +54,7 @@ public class MemberResponseDTO {
         Float score;
         String body;
         LocalDate createdAt;
-        List<String> imageUrls;
+        List<String> images;
     }
 
     @Builder
