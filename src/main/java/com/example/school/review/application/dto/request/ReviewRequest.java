@@ -10,6 +10,8 @@ public record ReviewRequest(
         String content,
         int starRating,
         @NotNull
-        List<String> images
+        List<String> images,
+        @NotNull
+        List<Long> hashTagIds
 ) {
 }

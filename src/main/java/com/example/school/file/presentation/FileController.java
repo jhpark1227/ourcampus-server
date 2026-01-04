@@ -37,4 +37,15 @@ public class FileController {
         );
         return fileService.uploadProfileImage(fileUploadRequest);
     }
+
+    @PostMapping("/reservations/images")
+    public ImageUploadResponse uploadReturnImage(@RequestParam MultipartFile file) throws IOException {
+        FileUploadRequest fileUploadRequest = new FileUploadRequest(
+                file.getOriginalFilename(),
+                file.getContentType(),
+                file.getSize(),
+                file.getInputStream()
+        );
+        return fileService.uploadReturnImage(fileUploadRequest);
+    }
 }

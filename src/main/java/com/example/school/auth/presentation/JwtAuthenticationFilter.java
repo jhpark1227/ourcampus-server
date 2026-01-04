@@ -25,15 +25,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String requestUri = request.getRequestURI();
+        return requestUri.equals("/auth/login") ||
+                requestUri.equals("/auth/reissue") ||
+                requestUri.equals("/members/register") ||
+                requestUri.equals("/universities") ||
+                requestUri.equals("/verify-email");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String requestUri = request.getRequestURI();
-        if (requestUri.equals("/auth/login") || requestUri.equals("/auth/reissue") || requestUri.equals(
-                "/members/register") || requestUri.equals("/universities")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         try {
             String accessToken = extractAccessToken(request);
             jwtProvider.validateToken(accessToken);

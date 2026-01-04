@@ -13,6 +13,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import java.util.ArrayList;
@@ -37,6 +39,14 @@ public class Review extends BaseEntity {
     @ElementCollection
     private List<String> images = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "hash_tag_review",
+            joinColumns = @JoinColumn(name = "review_id"),
+            inverseJoinColumns = @JoinColumn(name = "hash_tag_id")
+    )
+    private List<HashTag> hashTags = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -49,10 +59,11 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
-    public Review(String content, StarRating starRating, List<String> images, Reservation reservation) {
+    public Review(String content, StarRating starRating, List<String> images, List<HashTag> hashTags, Reservation reservation) {
         this.content = content;
         this.starRating = starRating;
         this.images = images;
+        this.hashTags = hashTags;
         this.reservation = reservation;
         this.member = reservation.getMember();
         this.facility = reservation.getFacility();
@@ -65,9 +76,10 @@ public class Review extends BaseEntity {
         throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
     }
 
-    public void modify(String content, StarRating starRating, List<String> images) {
+    public void modify(String content, StarRating starRating, List<String> images, List<HashTag> hashTags) {
         this.content = content;
         this.starRating = starRating;
         this.images = images;
+        this.hashTags = hashTags;
     }
 }

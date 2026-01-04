@@ -4,6 +4,7 @@ import com.example.school.facility.domain.Facility;
 import com.example.school.member.domain.Member;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -27,4 +28,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findReservationWithoutReviewByMember(Member member);
 
     List<Reservation> findByMember(Member member);
+
+    @Query("""
+            SELECT reservation
+            FROM Reservation reservation
+            WHERE reservation.timeSlot.startTime <= NOW()
+            AND NOW() <= reservation.timeSlot.endTime
+            AND reservation.member = :member
+            AND reservation.status = 'RESERVED'
+            """)
+    Optional<Reservation> findInUseReservationByMember(Member member);
 }

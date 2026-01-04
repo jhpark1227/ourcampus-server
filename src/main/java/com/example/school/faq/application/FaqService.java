@@ -17,7 +17,6 @@ public class FaqService {
     private final FaqRepository faqRepository;
 
     public List<FaqResponse> findFaqs(FaqType type, Pageable pageable) {
-        System.out.println(pageable.getPageSize());
         return faqRepository.findByType(type, pageable)
                 .stream()
                 .map(FaqResponse::from)

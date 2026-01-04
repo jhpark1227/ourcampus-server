@@ -1,6 +1,8 @@
 package com.example.school.facility.domain;
 
+import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.domain.BaseEntity;
+import com.example.school.global.exception.ApplicationException;
 import com.example.school.reservation.domain.Reservation;
 import com.example.school.reservation.domain.TimeSlot;
 import com.example.school.university.domain.University;
@@ -17,7 +19,6 @@ import jakarta.persistence.ManyToOne;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -81,15 +82,15 @@ public class Facility extends BaseEntity {
     public List<TimeSlot> getTimeSlots(LocalDate date) {
         List<TimeSlot> timeSlots = new ArrayList<>();
         for (OperationTime operationTime : operationTimes) {
-            LocalTime operationStartTime = operationTime.startTime();
-            LocalTime operationEndTime = operationTime.endTime();
-            LocalTime reservationStartTime = operationStartTime;
+            LocalDateTime operationStartTime = operationTime.startTime().toDateTime(date);
+            LocalDateTime operationEndTime = operationTime.endTime().toDateTime(date);
+            LocalDateTime reservationStartTime = operationStartTime;
             while (true) {
-                LocalTime reservationEndTime = reservationStartTime.plus(RESERVATION_TIME_UNIT);
+                LocalDateTime reservationEndTime = reservationStartTime.plus(RESERVATION_TIME_UNIT);
                 if (reservationEndTime.isAfter(operationEndTime) || reservationEndTime.isBefore(reservationStartTime)) {
                     break;
                 }
-                timeSlots.add(new TimeSlot(LocalDateTime.of(date, reservationStartTime), LocalDateTime.of(date, reservationEndTime)));
+                timeSlots.add(new TimeSlot(reservationStartTime, reservationEndTime));
                 reservationStartTime = reservationStartTime.plus(RESERVATION_TIME_UNIT);
             }
         }
@@ -102,17 +103,27 @@ public class Facility extends BaseEntity {
                 .collect(Collectors.toSet());
     }
 
-    public boolean isValidSlot(LocalDate date, TimeSlot timeSlot) {
+    public void isValidSlot(TimeSlot timeSlot) {
+        LocalDate date = timeSlot.startTime().toLocalDate();
         if (getTimeSlots(date).stream().noneMatch(t -> t.startTime().equals(timeSlot.startTime()))) {
-            return false;
+            throw new ApplicationException(ErrorStatus.INVALID_TIMESLOT);
         }
         if (!timeSlot.isDivisibleBy(RESERVATION_TIME_UNIT)) {
-            return false;
+            throw new ApplicationException(ErrorStatus.INVALID_TIMESLOT);
         }
         if (timeSlot.isLongerThan(RESERVATION_DURATION_LIMIT)) {
-            return false;
+            throw new ApplicationException(ErrorStatus.INVALID_TIMESLOT);
         }
-        return true;
+        boolean isWithinOperationTime = operationTimes.stream()
+                .anyMatch(operationTime -> {
+                    LocalDateTime opStart = operationTime.startTime().toDateTime(date);
+                    LocalDateTime opEnd = operationTime.endTime().toDateTime(date);
+                    return !timeSlot.startTime().isBefore(opStart) &&
+                            !timeSlot.endTime().isAfter(opEnd);
+                });
+        if (!isWithinOperationTime) {
+            throw new ApplicationException(ErrorStatus.INVALID_TIMESLOT);
+        }
     }
 
     public Duration getReservationDurationLimit() {

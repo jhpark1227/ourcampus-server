@@ -3,7 +3,9 @@ package com.example.school.member.presentation;
 import com.example.school.auth.domain.MemberPrincipal;
 import com.example.school.member.application.MemberService;
 import com.example.school.member.application.dto.request.RegisterRequest;
+import com.example.school.member.application.dto.request.VerificationEmailRequest;
 import com.example.school.member.application.dto.response.MemberInfoResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +30,12 @@ public class MemberController {
     public ResponseEntity<MemberInfoResponse> getMyInfo(@AuthenticationPrincipal MemberPrincipal principal) {
         MemberInfoResponse response = memberService.getUserInfo(principal.memberId());
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<Void> sendVerificationEmail(@RequestBody @Valid VerificationEmailRequest request) {
+        memberService.sendVerificationEmail(request);
+        return ResponseEntity.ok().build();
     }
 }
 

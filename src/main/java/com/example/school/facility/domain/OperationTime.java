@@ -1,12 +1,15 @@
 package com.example.school.facility.domain;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import java.time.LocalTime;
 
 @Embeddable
 public record OperationTime(
         String name,
-        LocalTime startTime,
-        LocalTime endTime
+        @AttributeOverride(name = "value", column = @Column(name = "start_time"))
+        MinuteOffset startTime,
+        @AttributeOverride(name = "value", column = @Column(name = "end_time"))
+        MinuteOffset endTime
 ) {
 }

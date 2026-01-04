@@ -12,6 +12,8 @@ import com.example.school.reservation.domain.ReservationRepository;
 import com.example.school.review.application.dto.request.ReviewModifyRequest;
 import com.example.school.review.application.dto.request.ReviewRequest;
 import com.example.school.review.application.dto.response.ReviewResponse;
+import com.example.school.review.domain.HashTag;
+import com.example.school.review.domain.HashTagRepository;
 import com.example.school.review.domain.Review;
 import com.example.school.review.domain.ReviewRepository;
 import com.example.school.review.domain.StarRating;
@@ -31,16 +33,27 @@ public class ReviewService {
     private final FacilityRepository facilityRepository;
     private final FileManager fileManager;
     private final MemberRepository memberRepository;
+    private final HashTagRepository hashTagRepository;
 
     public Long saveReview(ReviewRequest request, Long memberId) {
         Reservation reservation = reservationRepository.findById(request.reservationId())
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.RESERVATION_NOT_FOUND));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
+        List<HashTag> hashTags = request.hashTagIds()
+                .stream()
+                .map(id -> hashTagRepository.findById(id).orElseThrow(() -> new ApplicationException(ErrorStatus.NOTICE_NOT_FOUND)))
+                .toList();
         reservation.validateOwner(member);
         validateImages(request.images());
 
-        Review review = new Review(request.content(), new StarRating(request.starRating()), request.images(), reservation);
+        Review review = new Review(
+                request.content(),
+                new StarRating(request.starRating()),
+                request.images(),
+                hashTags,
+                reservation
+        );
         return reviewRepository.save(review).getId();
     }
 
@@ -64,10 +77,14 @@ public class ReviewService {
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.REVIEW_NOT_FOUND));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
+        List<HashTag> hashTags = request.hashTagIds()
+                .stream()
+                .map(id -> hashTagRepository.findById(id).orElseThrow(() -> new ApplicationException(ErrorStatus.NOTICE_NOT_FOUND)))
+                .toList();
         review.validateOwner(member);
         validateImages(request.images());
 
-        review.modify(request.content(), new StarRating(request.starRating()), request.images());
+        review.modify(request.content(), new StarRating(request.starRating()), request.images(), hashTags);
     }
 
     private void validateImages(List<String> images) {

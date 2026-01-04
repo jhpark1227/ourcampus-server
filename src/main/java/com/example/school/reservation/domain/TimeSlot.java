@@ -11,12 +11,6 @@ public record TimeSlot(
         LocalDateTime startTime,
         LocalDateTime endTime
 ) {
-    public TimeSlot {
-        if (!startTime.toLocalDate().equals(endTime.toLocalDate())) {
-            throw new ApplicationException(ErrorStatus.TOO_LONG_TIMESLOT);
-        }
-    }
-
     public boolean overlaps(TimeSlot other) {
         return !(
                 endTime.isBefore(other.startTime) ||
@@ -42,5 +36,12 @@ public record TimeSlot(
 
     public Duration getDuration() {
         return Duration.between(startTime, endTime);
+    }
+
+    public TimeSlot extend(LocalDateTime newEndTime) {
+        if (!newEndTime.isAfter(endTime)) {
+            throw new ApplicationException(ErrorStatus.EXTENDED_TIME_ERROR);
+        }
+        return new TimeSlot(startTime, newEndTime);
     }
 }

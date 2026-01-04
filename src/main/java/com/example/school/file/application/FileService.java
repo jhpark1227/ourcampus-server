@@ -29,11 +29,16 @@ public class FileService {
         return new ImageUploadResponse(fileUploadResponse.url());
     }
 
+    public ImageUploadResponse uploadReturnImage(FileUploadRequest file) {
+        validateImageType(file);
+        FileUploadResponse fileUploadResponse = fileManager.uploadFile(file, "return-images");
+        return new ImageUploadResponse(fileUploadResponse.url());
+    }
+
     private void validateImageType(FileUploadRequest file) {
         String filename = file.originalFilename();
         int dotPosition = filename.lastIndexOf('.');
         String fileExtension = filename.substring(dotPosition + 1);
-        System.out.println(fileExtension);
         if (ALLOWED_IMAGE_EXTENSIONS.contains(fileExtension.toLowerCase())) {
             return;
         }

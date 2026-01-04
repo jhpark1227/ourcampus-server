@@ -7,6 +7,8 @@ import com.example.school.global.exception.ApplicationException;
 import com.example.school.member.domain.Member;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +26,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 public class Reservation extends BaseEntity {
 
     @Id
@@ -34,6 +35,9 @@ public class Reservation extends BaseEntity {
     private TimeSlot timeSlot;
 
     private int headCount;
+
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
 
     @ElementCollection
     List<String> images = new ArrayList<>();
@@ -46,11 +50,13 @@ public class Reservation extends BaseEntity {
     @JoinColumn(name = "facility_id")
     private Facility facility;
 
-    public Reservation(Long id, TimeSlot timeSlot, int headCount, List<String> images, Member member, Facility facility) {
+    @Builder
+    public Reservation(TimeSlot timeSlot, int headCount, List<String> images, Member member, Facility facility) {
         validateHeadCount(headCount);
-        this.id = id;
+        facility.isValidSlot(timeSlot);
         this.timeSlot = timeSlot;
         this.headCount = headCount;
+        this.status = ReservationStatus.RESERVED;
         this.images = images;
         this.member = member;
         this.facility = facility;
@@ -75,5 +81,19 @@ public class Reservation extends BaseEntity {
 
     public LocalDateTime calculateScheduledTime(AlarmTiming alarmTiming) {
         return timeSlot.getTimeBefore(alarmTiming.getDuration());
+    }
+
+    public void extend(LocalDateTime endTime) {
+        TimeSlot newTimeSlot = timeSlot.extend(endTime);
+        facility.isValidSlot(timeSlot);
+        this.timeSlot = newTimeSlot;
+    }
+
+    public void markAsReturned(List<String> images) {
+        if (images == null || images.isEmpty()) {
+            throw new ApplicationException(ErrorStatus.RETURN_PHOTO_REQUIRED);
+        }
+        this.images = images;
+        this.status = ReservationStatus.RETURNED;
     }
 }

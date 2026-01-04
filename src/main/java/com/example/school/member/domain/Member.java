@@ -3,7 +3,6 @@ package com.example.school.member.domain;
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.domain.BaseEntity;
 import com.example.school.global.exception.ApplicationException;
-import com.example.school.member.application.PasswordEncoder;
 import com.example.school.university.domain.University;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,9 +58,5 @@ public class Member extends BaseEntity {
         } else {
             return true;
         }
-    }
-
-    public void changePassword(PasswordEncoder passwordEncoder, Password newPassword) {
-        this.password = passwordEncoder.encode(newPassword);
     }
 }

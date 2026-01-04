@@ -54,8 +54,10 @@ public enum ErrorStatus {
 
     REFRESHTOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "TOKEN_4001", "해당 RefreshToken이 존재하지 않습니다."),
     SEARCH_CONDITION_ERROR(HttpStatus.BAD_REQUEST, "FAC_4001", "잘못된 검색어입니다."),
-    STAR_RATING_RANGE(HttpStatus.BAD_REQUEST, "REVIEW_4001", "별점은 1점 이상 5점 이하의 정수입니다.");
-
+    STAR_RATING_RANGE(HttpStatus.BAD_REQUEST, "REVIEW_4001", "별점은 1점 이상 5점 이하의 정수입니다."),
+    FACILITY_DAILY_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "RESERVATION_4002", "이미 예약이 존재합니다."),
+    EXTENDED_TIME_ERROR(HttpStatus.BAD_REQUEST, "RESERVATION_4003", "연장할 시간은 기존 시간보다 이후여야 합니다."),
+    RETURN_PHOTO_REQUIRED(HttpStatus.BAD_REQUEST, "RESERVATION_4004", "반납 사진이 필요합니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

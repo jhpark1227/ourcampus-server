@@ -3,7 +3,6 @@ package com.example.school.facility.application.dto.response;
 import com.example.school.facility.domain.Building;
 import com.example.school.facility.domain.Facility;
 import com.example.school.facility.domain.OperationTime;
-import java.time.LocalTime;
 import java.util.List;
 
 public record FacilityResponse(
@@ -41,14 +40,14 @@ public record FacilityResponse(
     }
 
     private record OperationTimeResponse(String name,
-                                         LocalTime startTime,
-                                         LocalTime endTime
+                                         String startTime,
+                                         String endTime
     ) {
         private static OperationTimeResponse from(OperationTime operationTime) {
             return new OperationTimeResponse(
                     operationTime.name(),
-                    operationTime.startTime(),
-                    operationTime.endTime()
+                    operationTime.startTime().toDisplayString(),
+                    operationTime.endTime().toDisplayString()
             );
         }
     }
