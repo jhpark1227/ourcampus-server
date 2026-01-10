@@ -27,7 +27,7 @@ public class FileController {
         return fileService.uploadReviewImage(fileUploadRequest);
     }
 
-    @PostMapping("/members/images")
+    @PostMapping("/members/profile-image")
     public ImageUploadResponse uploadProfileImage(@RequestParam MultipartFile file) throws IOException {
         FileUploadRequest fileUploadRequest = new FileUploadRequest(
                 file.getOriginalFilename(),

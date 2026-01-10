@@ -22,7 +22,7 @@ public class HashTagRepositoryImpl implements HashTagRepositoryCustom {
         return queryFactory.select(hashTag)
                 .from(review)
                 .join(review.hashTags, hashTag)
-                .join(review.facility, facility)
+                .join(review.reservation.facility, facility)
                 .groupBy(hashTag.id)
                 .orderBy(facility.count().desc())
                 .limit(size)

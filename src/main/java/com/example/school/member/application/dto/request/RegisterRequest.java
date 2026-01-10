@@ -10,6 +10,10 @@ public record RegisterRequest(
         @NotBlank(message = "이름을 입력해 주세요.")
         String name,
         String profileImageUrl,
-        long universityId
+        String studentId,
+        long universityId,
+        long departmentId,
+        @NotBlank(message = "이메일 인증 토큰을 입력해 주세요.")
+        String verificationToken
 ) {
 }

@@ -3,6 +3,7 @@ package com.example.school.member.domain;
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.domain.BaseEntity;
 import com.example.school.global.exception.ApplicationException;
+import com.example.school.university.domain.Department;
 import com.example.school.university.domain.University;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,15 +13,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
+@SQLDelete(sql = "UPDATE member SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Member extends BaseEntity {
 
     @Id
@@ -30,33 +36,51 @@ public class Member extends BaseEntity {
     private String name;
 
     @Column(unique = true)
-    private String email;
+    private Email email;
 
     private String password;
 
     private String profileImage;
 
+    private String studentId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private Department department;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school_id")
+    @JoinColumn(name = "university_id")
     private University university;
 
-    public Member(Long id, String name, String email, String password, String profileImage, University university) {
-        if (!checkEmailFormat(email)) {
-            throw new ApplicationException(ErrorStatus.EMAIL_FORMAT_ERROR);
+    public static Member create(String name, Email email, Password password, String profileImage, String studentId,
+                                University university, Department department, PasswordEncoder passwordEncoder) {
+        Member member = new Member();
+        member.name = Objects.requireNonNull(name);
+        member.email = Objects.requireNonNull(email);
+        member.password = passwordEncoder.encode(password);
+        member.profileImage = profileImage;
+        member.studentId = Objects.requireNonNull(studentId);
+        member.university = Objects.requireNonNull(university);
+        member.department = Objects.requireNonNull(department);
+        return member;
+    }
+
+    public void verifyPassword(String rawPassword, PasswordEncoder passwordEncoder) {
+        if (!passwordEncoder.matches(rawPassword, this.password)) {
+            throw new ApplicationException(ErrorStatus.LOGIN_ERROR);
         }
-        this.id = id;
-        this.university = university;
-        this.name = name;
-        this.email = email;
-        this.password = password;
+    }
+
+    public void changePassword(Password password, PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(password);
+    }
+
+    public void changeProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
 
-    private Boolean checkEmailFormat(String email) {
-        if (!email.matches("^.+@.+$")) {
-            return false;
-        } else {
-            return true;
-        }
+    public void withdraw() {
+        this.name = "탈퇴한 사용자";
+        this.email = new Email("deleted_" + this.id + "@deleted.com");
+        this.deletedAt = LocalDateTime.now();
     }
 }

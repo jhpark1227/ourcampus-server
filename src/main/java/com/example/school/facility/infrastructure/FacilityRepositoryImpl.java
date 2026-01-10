@@ -22,7 +22,7 @@ public class FacilityRepositoryImpl implements FacilityRepositoryCustom {
     @Override
     public List<FacilityAndHashTag> findFacilityAndHashTagIdByHashTags(List<HashTag> hashTags) {
         return queryFactory.from(review)
-                .join(review.facility, facility)
+                .join(review.reservation.facility, facility)
                 .join(review.hashTags, hashTag)
                 .where(hashTag.in(hashTags))
                 .select(Projections.constructor(FacilityAndHashTag.class, facility, hashTag))

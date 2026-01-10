@@ -60,7 +60,7 @@ public class ReviewService {
     public List<ReviewResponse> findReviewsByMemberId(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
-        return reviewRepository.findByMemberOrderByCreatedAt(member)
+        return reviewRepository.findByReservation_MemberOrderByCreatedAt(member)
                 .stream()
                 .map(ReviewResponse::from)
                 .toList();
@@ -102,7 +102,7 @@ public class ReviewService {
     public List<ReviewResponse> findReviewByFacilityId(long facilityId, int page, int size) {
         Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
-        return reviewRepository.findByFacility(facility, PageRequest.of(page, size))
+        return reviewRepository.findByReservation_Facility(facility, PageRequest.of(page, size))
                 .stream()
                 .map(ReviewResponse::from)
                 .toList();

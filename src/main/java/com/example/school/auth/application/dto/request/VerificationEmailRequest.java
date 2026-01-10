@@ -1,4 +1,4 @@
-package com.example.school.member.application.dto.request;
+package com.example.school.auth.application.dto.request;
 
 import jakarta.validation.constraints.Email;
 

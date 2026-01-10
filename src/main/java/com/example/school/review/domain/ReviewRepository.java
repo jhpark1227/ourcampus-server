@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    List<Review> findByMemberOrderByCreatedAt(Member member);
+    List<Review> findByReservation_MemberOrderByCreatedAt(Member member);
 
-    List<Review> findByFacility(Facility facility, Pageable page);
+    List<Review> findByReservation_Facility(Facility facility, Pageable page);
 }

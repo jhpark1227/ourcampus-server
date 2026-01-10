@@ -1,6 +1,6 @@
 package com.example.school.auth.presentation;
 
-import com.example.school.auth.application.JwtProvider;
+import com.example.school.auth.domain.LoginTokenIssuer;
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.exception.ApplicationException;
 import com.example.school.global.exception.ErrorResponse;
@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashSet;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,9 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
+    private final LoginTokenIssuer loginTokenIssuer;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -29,9 +31,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestUri = request.getRequestURI();
         return requestUri.equals("/auth/login") ||
                 requestUri.equals("/auth/reissue") ||
-                requestUri.equals("/members/register") ||
+                requestUri.startsWith("/auth/password") ||
+                requestUri.startsWith("/members/password") ||
+                requestUri.startsWith("/members/register") ||
+                requestUri.equals("/members/find-email") ||
                 requestUri.equals("/universities") ||
-                requestUri.equals("/verify-email");
+                requestUri.matches("/universities/.*/departments");
     }
 
     @Override
@@ -39,10 +44,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String accessToken = extractAccessToken(request);
-            jwtProvider.validateToken(accessToken);
+            loginTokenIssuer.validate(accessToken);
             SecurityContextHolder.getContext().setAuthentication(getAuthentication(accessToken));
         } catch (Exception e) {
             handleAuthenticationError(response, e);
+            log.warn(e.getMessage(), e);
             return;
         }
         filterChain.doFilter(request, response);
@@ -69,7 +75,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private Authentication getAuthentication(String token) {
-        return new UsernamePasswordAuthenticationToken(jwtProvider.getMemberPrincipal(token), "",
-                new HashSet<>());
+        return new UsernamePasswordAuthenticationToken(
+                loginTokenIssuer.getMemberPrincipal(token),
+                "",
+                new HashSet<>()
+        );
     }
 }

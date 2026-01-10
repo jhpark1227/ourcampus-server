@@ -1,9 +1,6 @@
 package com.example.school.review.domain;
 
-import com.example.school.facility.domain.Facility;
-import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.domain.BaseEntity;
-import com.example.school.global.exception.ApplicationException;
 import com.example.school.member.domain.Member;
 import com.example.school.reservation.domain.Reservation;
 import jakarta.persistence.ElementCollection;
@@ -15,17 +12,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE review SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Review extends BaseEntity {
 
     @Id
@@ -47,14 +47,6 @@ public class Review extends BaseEntity {
     )
     private List<HashTag> hashTags = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "facility_id")
-    private Facility facility;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
@@ -65,15 +57,10 @@ public class Review extends BaseEntity {
         this.images = images;
         this.hashTags = hashTags;
         this.reservation = reservation;
-        this.member = reservation.getMember();
-        this.facility = reservation.getFacility();
     }
 
     public void validateOwner(Member member) {
-        if (this.member.equals(member)) {
-            return;
-        }
-        throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
+        this.reservation.validateOwner(member);
     }
 
     public void modify(String content, StarRating starRating, List<String> images, List<HashTag> hashTags) {

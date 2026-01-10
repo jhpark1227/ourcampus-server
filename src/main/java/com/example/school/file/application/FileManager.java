@@ -9,6 +9,8 @@ public interface FileManager {
 
     String getFileUrl(String path);
 
-    boolean exist(String imageUrl);
+    boolean exist(String fileUrl);
+
+    void delete(String fileUrl);
 }
 

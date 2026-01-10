@@ -1,6 +1,4 @@
-package com.example.school.member.application;
-
-import com.example.school.member.domain.Password;
+package com.example.school.member.domain;
 
 public interface PasswordEncoder {
 

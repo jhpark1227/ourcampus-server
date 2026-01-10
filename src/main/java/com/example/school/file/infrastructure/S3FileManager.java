@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -60,10 +61,10 @@ public class S3FileManager implements FileManager {
     }
 
     @Override
-    public boolean exist(String imageUrl) {
+    public boolean exist(String fileUrl) {
         HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
                 .bucket(bucket)
-                .key(parseKey(imageUrl))
+                .key(parseKey(fileUrl))
                 .build();
         try {
             s3Client.headObject(headObjectRequest);
@@ -73,7 +74,19 @@ public class S3FileManager implements FileManager {
         return true;
     }
 
+    @Override
+    public void delete(String fileUrl) {
+        DeleteObjectRequest request = DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(parseKey(fileUrl))
+                .build();
+        s3Client.deleteObject(request);
+    }
+
     private String parseKey(String url) {
+        if (url.length() < 8) {
+            return url;
+        }
         String withoutProtocol = url.substring(8);
 
         if (withoutProtocol.contains(".s3.")) {

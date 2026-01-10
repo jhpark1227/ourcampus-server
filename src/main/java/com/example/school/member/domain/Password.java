@@ -15,14 +15,14 @@ public class Password {
     private String value;
 
     public Password(String value) {
-        if (checkPassword(value)) {
+        if (!checkPassword(value)) {
             throw new ApplicationException(ErrorStatus.PASSWORD_FORMAT_ERROR);
         }
         this.value = value;
     }
 
-    private Boolean checkPassword(String password) {
-        if (password.length() < 8 || password.length() > 15) {
+    private boolean checkPassword(String password) {
+        if (password.length() < 7 || password.length() > 15) {
             return false;
         }
         if (!password.matches(".*[a-zA-Z].*") || !password.matches(".*\\d.*")) {

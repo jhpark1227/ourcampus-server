@@ -1,7 +1,7 @@
 package com.example.school.member.infrastructure;
 
-import com.example.school.member.application.PasswordEncoder;
 import com.example.school.member.domain.Password;
+import com.example.school.member.domain.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 

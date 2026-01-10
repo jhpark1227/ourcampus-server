@@ -14,13 +14,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        log.warn(exception.getMessage());
+        log.warn(exception.getMessage(), exception);
         return ResponseEntity.badRequest().body(ErrorResponse.from(exception.getMessage()));
     }
 
     @ExceptionHandler(ApplicationException.class)
     ResponseEntity<ErrorResponse> handleApplicationException(ApplicationException exception) {
-        log.warn(exception.getMessage());
+        log.warn(exception.getMessage(), exception);
         ErrorStatus errorStatus = exception.getErrorStatus();
         return ResponseEntity.status(errorStatus.getHttpStatus())
                 .body(ErrorResponse.from(errorStatus));

@@ -23,9 +23,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                     FROM Reservation reservation
                     LEFT JOIN Review review ON review.reservation.id = reservation.id
                     WHERE reservation.member = :member
+                    AND reservation.status = 'RETURNED'
                     AND review IS NULL
             """)
-    List<Reservation> findReservationWithoutReviewByMember(Member member);
+    List<Reservation> findReturnedReservationsWithoutReviewByMember(Member member);
 
     List<Reservation> findByMember(Member member);
 
@@ -38,4 +39,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             AND reservation.status = 'RESERVED'
             """)
     Optional<Reservation> findInUseReservationByMember(Member member);
+
+    void deleteByMember(Member member);
 }

@@ -1,46 +1,36 @@
 package com.example.school.auth.presentation;
 
-import com.example.school.auth.application.AuthCommandService;
-import com.example.school.auth.application.AuthQueryService;
+import com.example.school.auth.application.AuthService;
 import com.example.school.auth.application.dto.request.LoginRequest;
+import com.example.school.auth.application.dto.request.LogoutRequest;
 import com.example.school.auth.application.dto.response.LoginResponse;
-import com.example.school.global.apiPayload.ApiResponse;
+import com.example.school.auth.domain.MemberPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthCommandService authCommandService;
-    private final AuthQueryService authQueryService;
+    private final AuthService authService;
 
-    @PostMapping(value = "/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest user) {
-        LoginResponse response = authQueryService.login(user);
+    @PostMapping("/auth/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }
 
-    //로그아웃
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/logout")
-    public ApiResponse<String> logout(@RequestHeader("Authorization") String accessToken) {
-        authCommandService.logout(accessToken);
-        return ApiResponse.onSuccess("로그아웃 처리 되었습니다.");
-    }
-
-    //회원탈퇴
-    @DeleteMapping(value = "/delete")
-    public ApiResponse<String> withdrawUser(@RequestHeader("Authorization") String accessToken) {
-        authCommandService.withdrawUser(accessToken);
-        return ApiResponse.onSuccess("회원탈퇴 처리 되었습니다.");
+    @DeleteMapping("/auth/logout")
+    public ResponseEntity<Void> logout(
+            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @RequestBody LogoutRequest request
+    ) {
+        authService.logout(request, memberPrincipal.memberId());
+        return ResponseEntity.noContent().build();
     }
 }

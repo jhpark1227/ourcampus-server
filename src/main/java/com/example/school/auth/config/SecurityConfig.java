@@ -1,6 +1,6 @@
 package com.example.school.auth.config;
 
-import com.example.school.auth.application.JwtProvider;
+import com.example.school.auth.domain.LoginTokenIssuer;
 import com.example.school.auth.presentation.JwtAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
+    private final LoginTokenIssuer loginTokenIssuer;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -29,15 +29,14 @@ public class SecurityConfig {
                             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/auth/reissue").permitAll()
-                        .requestMatchers("/members/register").permitAll()
+                        .requestMatchers("/auth/logout").authenticated()
+                        .requestMatchers("/members/register/**").permitAll()
+                        .requestMatchers("/members/find-email").permitAll()
+                        .requestMatchers("/members/password/**").permitAll()
                         .requestMatchers("/members/**").authenticated()
                         .requestMatchers("/reservations/**").authenticated()
                         .requestMatchers("/facilities/**").authenticated()
                         .requestMatchers("/me/**").authenticated()
-                        .requestMatchers("/ws/**").permitAll()
-                        .requestMatchers("/stomp/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -45,6 +44,6 @@ public class SecurityConfig {
     }
 
     private JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtProvider, objectMapper);
+        return new JwtAuthenticationFilter(loginTokenIssuer, objectMapper);
     }
 }

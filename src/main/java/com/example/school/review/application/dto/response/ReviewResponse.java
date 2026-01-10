@@ -18,7 +18,7 @@ public record ReviewResponse(
         FacilityResponse facility
 ) {
     public static ReviewResponse from(Review review) {
-        Facility facility = review.getFacility();
+        Facility facility = review.getReservation().getFacility();
         Optional<Building> building = facility.getBuilding();
         BuildingResponse buildingResponse = building.map(value -> new BuildingResponse(value.getName())).orElse(null);
         FacilityResponse facilityResponse = new FacilityResponse(
@@ -32,7 +32,7 @@ public record ReviewResponse(
                 review.getStarRating().value(),
                 review.getImages(),
                 review.getCreatedAt(),
-                MemberResponse.from(review.getMember()),
+                MemberResponse.from(review.getReservation().getMember()),
                 facilityResponse
         );
     }
@@ -42,6 +42,9 @@ public record ReviewResponse(
             String profileImageUrl
     ) {
         private static MemberResponse from(Member member) {
+            if (member == null) {
+                return new MemberResponse("탈퇴한 사용자", null);
+            }
             return new MemberResponse(member.getName(), member.getProfileImage());
         }
     }

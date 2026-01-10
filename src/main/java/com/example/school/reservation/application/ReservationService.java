@@ -65,7 +65,7 @@ public class ReservationService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
         if (onlyPendingReview) {
-            return reservationRepository.findReservationWithoutReviewByMember(member)
+            return reservationRepository.findReturnedReservationsWithoutReviewByMember(member)
                     .stream()
                     .map(ReservationResponse::from)
                     .toList();

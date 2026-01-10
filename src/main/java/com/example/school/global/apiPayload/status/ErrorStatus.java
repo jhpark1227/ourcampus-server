@@ -31,8 +31,8 @@ public enum ErrorStatus {
     NICKNAME_DUPLICATE(HttpStatus.BAD_REQUEST, "AUTH_4003", "사용 불가능한 닉네임입니다."),
     PASSWORD_FORMAT_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4004", "사용 불가능한 비밀번호입니다."),
     EMAIL_FORMAT_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4005", "사용 불가능한 이메일입니다."),
-    REDIS_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4006", "Redis 오류."),
-    EMAIL_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4007", "이메일 인증 실패"),
+    VERIFICATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTH_4006", "인증 정보가 존재하지 않습니다."),
+    EMAIL_SEND_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4007", "이메일 전송에 실패했습니다."),
     EMAIL_CODE_ERROR(HttpStatus.BAD_REQUEST, "AUTH_4008", "이메일 인증번호 불일치"),
     INVALID_CURRENT_PASSWORD(HttpStatus.BAD_REQUEST, "AUTH_4009", "현재 비밀번호 불일치"),
     USERID_MISMATCH(HttpStatus.BAD_REQUEST, "AUTH_4010", "유저 아이디와 이메일이 일치하지 않습니다."),
@@ -51,13 +51,19 @@ public enum ErrorStatus {
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "THEME_4001", "테마가 존재하지 않습니다."),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION_4001", "예약이 존재하지 않습니다."),
     IMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "IMAGE_4001", "이미지가 존재하지 않습니다."),
+    DEPARTMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "IMAGE_4001", "전공(학과)가 존재하지 않습니다."),
 
     REFRESHTOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "TOKEN_4001", "해당 RefreshToken이 존재하지 않습니다."),
     SEARCH_CONDITION_ERROR(HttpStatus.BAD_REQUEST, "FAC_4001", "잘못된 검색어입니다."),
     STAR_RATING_RANGE(HttpStatus.BAD_REQUEST, "REVIEW_4001", "별점은 1점 이상 5점 이하의 정수입니다."),
     FACILITY_DAILY_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "RESERVATION_4002", "이미 예약이 존재합니다."),
     EXTENDED_TIME_ERROR(HttpStatus.BAD_REQUEST, "RESERVATION_4003", "연장할 시간은 기존 시간보다 이후여야 합니다."),
-    RETURN_PHOTO_REQUIRED(HttpStatus.BAD_REQUEST, "RESERVATION_4004", "반납 사진이 필요합니다.");
+    RETURN_PHOTO_REQUIRED(HttpStatus.BAD_REQUEST, "RESERVATION_4004", "반납 사진이 필요합니다."),
+    EMAIL_COOL_TIME(HttpStatus.TOO_MANY_REQUESTS, "AUTH_40019", "중복된 인증 메일 전송 요청입니다."),
+    WRONG_EMAIL_CODE(HttpStatus.TOO_MANY_REQUESTS, "AUTH_40019", "잘못된 인증번호입니다."),
+    EXPIRED_EMAIL_CODE(HttpStatus.BAD_REQUEST, "AUTH_40021", "만료된 인증번호입니다."),
+    WRONG_VERIFICATION_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_40020", "회원가입할 수 없습니다."),
+    MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "AUTH_40020", "이미 존재하는 회원입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
