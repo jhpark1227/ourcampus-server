@@ -5,7 +5,7 @@ import com.example.school.facility.domain.Facility;
 import com.example.school.facility.domain.OperationTime;
 import java.util.List;
 
-public record FacilityResponse(
+public record FacilityDetailResponse(
         Long id,
         String name,
         String description,
@@ -17,10 +17,11 @@ public record FacilityResponse(
         List<String> images,
         List<OperationTimeResponse> operationTime,
         BuildingResponse building,
-        boolean reservable
+        boolean reservable,
+        double averageStarRating
 ) {
-    public static FacilityResponse from(Facility facility) {
-        return new FacilityResponse(
+    public static FacilityDetailResponse of(Facility facility, double averageStarRating) {
+        return new FacilityDetailResponse(
                 facility.getId(),
                 facility.getName(),
                 facility.getDescription(),
@@ -35,7 +36,8 @@ public record FacilityResponse(
                         .map(OperationTimeResponse::from)
                         .toList(),
                 facility.getBuilding().isPresent() ? BuildingResponse.from(facility.getBuilding().get()) : null,
-                facility.reservable()
+                facility.reservable(),
+                averageStarRating
         );
     }
 

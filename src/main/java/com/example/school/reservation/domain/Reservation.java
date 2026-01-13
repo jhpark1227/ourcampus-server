@@ -1,6 +1,6 @@
 package com.example.school.reservation.domain;
 
-import com.example.school.facility.domain.Facility;
+import com.example.school.facility.domain.ReservableFacility;
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.domain.BaseEntity;
 import com.example.school.global.exception.ApplicationException;
@@ -52,10 +52,10 @@ public class Reservation extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "facility_id")
-    private Facility facility;
+    private ReservableFacility facility;
 
     @Builder
-    public Reservation(TimeSlot timeSlot, int headCount, List<String> images, Member member, Facility facility) {
+    public Reservation(TimeSlot timeSlot, int headCount, List<String> images, Member member, ReservableFacility facility) {
         validateHeadCount(headCount);
         facility.isValidSlot(timeSlot);
         this.timeSlot = timeSlot;

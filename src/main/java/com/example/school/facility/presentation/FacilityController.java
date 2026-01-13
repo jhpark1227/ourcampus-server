@@ -2,11 +2,9 @@ package com.example.school.facility.presentation;
 
 import com.example.school.auth.domain.MemberPrincipal;
 import com.example.school.facility.application.FacilityService;
+import com.example.school.facility.application.dto.response.FacilityDetailResponse;
 import com.example.school.facility.application.dto.response.FacilityResponse;
-import com.example.school.facility.application.dto.response.FacilityScheduleResponse;
 import com.example.school.facility.domain.FacilityCategory;
-import com.example.school.reservation.application.dto.response.TimeSlotWithBookedResponse;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,8 +21,8 @@ public class FacilityController {
     private final FacilityService facilityService;
 
     @GetMapping("/facilities/{facilityId}")
-    public FacilityResponse getFacility(@PathVariable("facilityId") long id) {
-        return facilityService.findFacilityById(id);
+    public FacilityDetailResponse getFacilityDetail(@PathVariable("facilityId") long id) {
+        return facilityService.getFacilityDetail(id);
     }
 
     @GetMapping("/facilities")
@@ -32,39 +30,24 @@ public class FacilityController {
             @AuthenticationPrincipal MemberPrincipal memberPrincipal,
             @RequestParam("category") FacilityCategory category
     ) {
-        return facilityService.findFacilityByUniversityAndCategory(memberPrincipal.universityId(), category);
+        return facilityService.findByUniversityAndCategory(memberPrincipal.universityId(), category);
     }
 
     @GetMapping("/buildings/{buildingId}/facilities")
     public List<FacilityResponse> getFacilitiesByBuilding(@PathVariable("buildingId") long buildingId) {
-        return facilityService.findFacilitiesByBuildingId(buildingId);
+        return facilityService.findFacilitiesByBuilding(buildingId);
     }
 
     @GetMapping("/themes/{themeId}/facilities")
     public List<FacilityResponse> getFacilitiesByTheme(@PathVariable("themeId") long themeId) {
-        return facilityService.findFacilitiesByThemeId(themeId);
-    }
-
-    @GetMapping("/facilities/{facilityId}/times")
-    public List<TimeSlotWithBookedResponse> getAvailableTime(
-            @PathVariable("facilityId") long facilityId, @RequestParam LocalDate date
-    ) {
-        return facilityService.getTimesByFacilityAndDate(facilityId, date);
-    }
-
-    @GetMapping("/facilities/{facilityId}/weekly-schedule")
-    public List<FacilityScheduleResponse> getWeeklySchedule(
-            @PathVariable(name = "facilityId") Long facilityId,
-            @RequestParam(name = "date") LocalDate date
-    ) {
-        return facilityService.getWeeklySchedule(facilityId, date);
+        return facilityService.findFacilitiesByTheme(themeId);
     }
 
     @GetMapping("/facilities/search")
-    public List<FacilityResponse> searchFacilities(
+    public List<FacilityResponse> search(
             @RequestParam("keyword") String keyword,
             @AuthenticationPrincipal MemberPrincipal memberPrincipal
     ) {
-        return facilityService.searchFacilitiesByKeyword(keyword, memberPrincipal.universityId());
+        return facilityService.search(keyword, memberPrincipal.universityId());
     }
 }

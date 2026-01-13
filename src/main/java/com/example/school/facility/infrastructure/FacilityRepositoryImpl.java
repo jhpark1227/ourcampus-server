@@ -1,6 +1,7 @@
 package com.example.school.facility.infrastructure;
 
 import static com.example.school.facility.domain.QFacility.facility;
+import static com.example.school.facility.domain.QReservableFacility.reservableFacility;
 import static com.example.school.review.domain.QHashTag.hashTag;
 import static com.example.school.review.domain.QReview.review;
 
@@ -22,7 +23,7 @@ public class FacilityRepositoryImpl implements FacilityRepositoryCustom {
     @Override
     public List<FacilityAndHashTag> findFacilityAndHashTagIdByHashTags(List<HashTag> hashTags) {
         return queryFactory.from(review)
-                .join(review.reservation.facility, facility)
+                .join(review.reservation.facility, reservableFacility)
                 .join(review.hashTags, hashTag)
                 .where(hashTag.in(hashTags))
                 .select(Projections.constructor(FacilityAndHashTag.class, facility, hashTag))

@@ -1,7 +1,7 @@
 package com.example.school.review.application;
 
-import com.example.school.facility.domain.Facility;
 import com.example.school.facility.domain.FacilityRepository;
+import com.example.school.facility.domain.ReservableFacility;
 import com.example.school.file.application.FileManager;
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.exception.ApplicationException;
@@ -12,14 +12,17 @@ import com.example.school.reservation.domain.ReservationRepository;
 import com.example.school.review.application.dto.request.ReviewModifyRequest;
 import com.example.school.review.application.dto.request.ReviewRequest;
 import com.example.school.review.application.dto.response.ReviewResponse;
+import com.example.school.review.application.dto.response.ReviewStatisticsResponse;
 import com.example.school.review.domain.HashTag;
 import com.example.school.review.domain.HashTagRepository;
 import com.example.school.review.domain.Review;
 import com.example.school.review.domain.ReviewRepository;
+import com.example.school.review.domain.ReviewStarRatingCount;
 import com.example.school.review.domain.StarRating;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,24 +90,29 @@ public class ReviewService {
         review.modify(request.content(), new StarRating(request.starRating()), request.images(), hashTags);
     }
 
-    private void validateImages(List<String> images) {
-        if (images.stream().anyMatch(imageUrl -> !fileManager.exist(imageUrl))) {
-            throw new ApplicationException(ErrorStatus.IMAGE_NOT_FOUND);
-        }
-    }
-
     public void deleteReviewById(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.REVIEW_NOT_FOUND));
         reviewRepository.delete(review);
     }
 
-    public List<ReviewResponse> findReviewByFacilityId(long facilityId, int page, int size) {
-        Facility facility = facilityRepository.findById(facilityId)
+    public Page<ReviewResponse> findReviewByFacilityId(long facilityId, Pageable pageable) {
+        ReservableFacility facility = facilityRepository.findReservableById(facilityId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
-        return reviewRepository.findByReservation_Facility(facility, PageRequest.of(page, size))
-                .stream()
-                .map(ReviewResponse::from)
-                .toList();
+        return reviewRepository.findByReservation_FacilityOrderByCreatedAtDesc(facility, pageable)
+                .map(ReviewResponse::from);
+    }
+
+    private void validateImages(List<String> images) {
+        if (images.stream().anyMatch(imageUrl -> !fileManager.exist(imageUrl))) {
+            throw new ApplicationException(ErrorStatus.IMAGE_NOT_FOUND);
+        }
+    }
+
+    public ReviewStatisticsResponse getReviewStatistics(long facilityId) {
+        ReservableFacility facility = facilityRepository.findReservableById(facilityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
+        List<ReviewStarRatingCount> starRatingCounts = reviewRepository.getStarRatingCounts(facility);
+        return ReviewStatisticsResponse.of(starRatingCounts);
     }
 }

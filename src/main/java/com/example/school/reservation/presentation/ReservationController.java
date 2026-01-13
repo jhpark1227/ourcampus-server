@@ -1,16 +1,19 @@
 package com.example.school.reservation.presentation;
 
 import com.example.school.auth.domain.MemberPrincipal;
+import com.example.school.facility.application.dto.response.FacilityScheduleResponse;
 import com.example.school.reservation.application.ReservationService;
 import com.example.school.reservation.application.dto.request.ReservationExtendRequest;
 import com.example.school.reservation.application.dto.request.ReservationRequest;
 import com.example.school.reservation.application.dto.request.ReservationReturnRequest;
 import com.example.school.reservation.application.dto.response.ReservationCreateResponse;
+import com.example.school.reservation.application.dto.response.ReservationInfo;
 import com.example.school.reservation.application.dto.response.ReservationResponse;
 import com.example.school.reservation.domain.AlarmTiming;
 import com.example.school.reservation.presentation.dto.AlertOptionsResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +51,22 @@ public class ReservationController {
         return reservationService.findReservationById(reservationId, memberPrincipal.memberId());
     }
 
+    @GetMapping("/facilities/{facilityId}/reservation-info")
+    public ReservationInfo getReservationInfo(
+            @PathVariable("facilityId") long facilityId, @RequestParam LocalDate date
+    ) {
+        return reservationService.getReservationInfo(facilityId, date);
+    }
+
+    @GetMapping("/facilities/{facilityId}/weekly-schedule")
+    public List<FacilityScheduleResponse> getWeeklySchedule(
+            @PathVariable(name = "facilityId") Long facilityId,
+            @RequestParam(name = "date") LocalDate date
+    ) {
+        return reservationService.getWeeklySchedule(facilityId, date);
+    }
+
+
     @GetMapping("/reservations/alert-options")
     public List<AlertOptionsResponse> getAlertOptions() {
         return Arrays.stream(AlarmTiming.values())
@@ -60,7 +79,7 @@ public class ReservationController {
             @AuthenticationPrincipal MemberPrincipal memberPrincipal,
             @RequestParam(name = "onlyPendingReview", required = false) boolean onlyPendingReview
     ) {
-        return reservationService.findReservationsByMemberId(memberPrincipal.memberId(), onlyPendingReview);
+        return reservationService.findReservationsByMember(memberPrincipal.memberId(), onlyPendingReview);
     }
 
     @GetMapping("/me/reservations/in-use")

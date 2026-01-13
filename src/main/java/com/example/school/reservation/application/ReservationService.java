@@ -1,8 +1,9 @@
 package com.example.school.reservation.application;
 
 import com.example.school.auth.domain.MemberPrincipal;
-import com.example.school.facility.domain.Facility;
+import com.example.school.facility.application.dto.response.FacilityScheduleResponse;
 import com.example.school.facility.domain.FacilityRepository;
+import com.example.school.facility.domain.ReservableFacility;
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.exception.ApplicationException;
 import com.example.school.member.domain.Member;
@@ -11,13 +12,18 @@ import com.example.school.reservation.application.dto.request.ReservationExtendR
 import com.example.school.reservation.application.dto.request.ReservationRequest;
 import com.example.school.reservation.application.dto.request.ReservationReturnRequest;
 import com.example.school.reservation.application.dto.response.ReservationCreateResponse;
+import com.example.school.reservation.application.dto.response.ReservationInfo;
 import com.example.school.reservation.application.dto.response.ReservationResponse;
+import com.example.school.reservation.application.dto.response.TimeSlotWithBookedResponse;
 import com.example.school.reservation.domain.Reservation;
 import com.example.school.reservation.domain.ReservationAlarm;
 import com.example.school.reservation.domain.ReservationAlarmRepository;
 import com.example.school.reservation.domain.ReservationRepository;
 import com.example.school.reservation.domain.TimeSlot;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +40,7 @@ public class ReservationService {
     private final ReservationAlarmRepository reservationAlarmRepository;
 
     public ReservationCreateResponse createReservation(ReservationRequest request, MemberPrincipal memberPrincipal) {
-        Facility facility = facilityRepository.findById(request.facilityId())
+        ReservableFacility facility = facilityRepository.findReservableById(request.facilityId())
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
         Member member = memberRepository.findById(memberPrincipal.memberId())
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
@@ -61,7 +67,7 @@ public class ReservationService {
         return ReservationCreateResponse.from(savedReservation);
     }
 
-    public List<ReservationResponse> findReservationsByMemberId(Long memberId, boolean onlyPendingReview) {
+    public List<ReservationResponse> findReservationsByMember(Long memberId, boolean onlyPendingReview) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
         if (onlyPendingReview) {
@@ -84,6 +90,34 @@ public class ReservationService {
         reservation.validateOwner(member);
 
         return ReservationResponse.from(reservation);
+    }
+
+    public List<FacilityScheduleResponse> getWeeklySchedule(Long facilityId, LocalDate baseDate) {
+        ReservableFacility facility = facilityRepository.findReservableById(facilityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
+        List<FacilityScheduleResponse> facilitySchedules = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            LocalDate date = baseDate.plusDays(i);
+            List<TimeSlotWithBookedResponse> times = getAvailableTimeSlots(facility, date);
+            facilitySchedules.add(new FacilityScheduleResponse(times, date));
+        }
+        return facilitySchedules;
+    }
+
+    public ReservationInfo getReservationInfo(long facilityId, LocalDate date) {
+        ReservableFacility facility = facilityRepository.findReservableById(facilityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
+        return ReservationInfo.of(getAvailableTimeSlots(facility, date), facility.getReservationDurationLimit());
+    }
+
+    private List<TimeSlotWithBookedResponse> getAvailableTimeSlots(ReservableFacility facility, LocalDate date) {
+        List<Reservation> reservations = reservationRepository.findByFacilityAndDate(facility, date);
+
+        List<TimeSlot> timeSlots = facility.getTimeSlots(date);
+        Collection<TimeSlot> availableTimeSlots = facility.getAvailableTimeSlots(date, reservations);
+        return timeSlots.stream()
+                .map(timeSlot -> TimeSlotWithBookedResponse.of(timeSlot, !availableTimeSlots.contains(timeSlot)))
+                .toList();
     }
 
     public ReservationResponse findInUseReservation(Long memberId) {

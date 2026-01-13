@@ -8,7 +8,7 @@ public record TimeSlotWithBookedResponse(
         long durationMinutes,
         boolean isBooked
 ) {
-    public static TimeSlotWithBookedResponse from(TimeSlot timeSlot, boolean booked) {
+    public static TimeSlotWithBookedResponse of(TimeSlot timeSlot, boolean booked) {
         return new TimeSlotWithBookedResponse(timeSlot.startTime(), timeSlot.getDuration().toMinutes(), booked);
     }
 }

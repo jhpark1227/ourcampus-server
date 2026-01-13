@@ -5,9 +5,12 @@ import com.example.school.review.application.ReviewService;
 import com.example.school.review.application.dto.request.ReviewModifyRequest;
 import com.example.school.review.application.dto.request.ReviewRequest;
 import com.example.school.review.application.dto.response.ReviewResponse;
+import com.example.school.review.application.dto.response.ReviewStatisticsResponse;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,12 +35,11 @@ public class ReviewController {
     }
 
     @GetMapping("/facilities/{facilityId}/reviews")
-    public List<ReviewResponse> getFacilityReviews(
+    public Page<ReviewResponse> getFacilityReviews(
             @PathVariable("facilityId") long facilityId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            Pageable pageable
     ) {
-        return reviewService.findReviewByFacilityId(facilityId, page, size);
+        return reviewService.findReviewByFacilityId(facilityId, pageable);
     }
 
     @GetMapping("/reviews/{reviewId}")
@@ -49,6 +50,11 @@ public class ReviewController {
     @GetMapping("/me/reviews")
     public List<ReviewResponse> getMyReviews(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         return reviewService.findReviewsByMemberId(memberPrincipal.memberId());
+    }
+
+    @GetMapping("/facilities/{facilityId}/reviews/statistics")
+    public ReviewStatisticsResponse getReviewStatistics(@PathVariable("facilityId") Long facilityId) {
+        return reviewService.getReviewStatistics(facilityId);
     }
 
     @PutMapping("/reviews/{reviewId}")

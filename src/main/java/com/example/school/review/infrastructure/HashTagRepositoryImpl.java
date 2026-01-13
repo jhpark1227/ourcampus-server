@@ -1,6 +1,6 @@
 package com.example.school.review.infrastructure;
 
-import static com.example.school.facility.domain.QFacility.facility;
+import static com.example.school.facility.domain.QReservableFacility.reservableFacility;
 import static com.example.school.review.domain.QHashTag.hashTag;
 import static com.example.school.review.domain.QReview.review;
 
@@ -22,9 +22,9 @@ public class HashTagRepositoryImpl implements HashTagRepositoryCustom {
         return queryFactory.select(hashTag)
                 .from(review)
                 .join(review.hashTags, hashTag)
-                .join(review.reservation.facility, facility)
+                .join(review.reservation.facility, reservableFacility)
                 .groupBy(hashTag.id)
-                .orderBy(facility.count().desc())
+                .orderBy(reservableFacility.count().desc())
                 .limit(size)
                 .fetch();
     }

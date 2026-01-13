@@ -1,6 +1,7 @@
 package com.example.school.reservation.application.dto.response;
 
 import com.example.school.facility.domain.Facility;
+import com.example.school.facility.domain.ReservableFacility;
 import com.example.school.member.domain.Member;
 import com.example.school.reservation.domain.Reservation;
 import java.time.LocalDateTime;
@@ -45,7 +46,7 @@ public record ReservationResponse(
                     facility.getCaution(),
                     facility.getLocation(),
                     facility.getThumbnailImage(),
-                    facility.getReservationDurationLimit().toMinutes()
+                    facility instanceof ReservableFacility ? ((ReservableFacility) facility).getReservationDurationLimit().toMinutes() : 0
             );
         }
     }
