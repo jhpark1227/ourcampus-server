@@ -1,29 +1,20 @@
 package com.example.school.reservation.domain;
 
+import com.example.school.alarm.domain.Alarm;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE reservation_alarm SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
-public class ReservationAlarm {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@DiscriminatorValue("RESERVATION")
+public class ReservationAlarm extends Alarm {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
@@ -32,13 +23,19 @@ public class ReservationAlarm {
     @Enumerated(EnumType.STRING)
     private AlarmTiming alarmTiming;
 
-    private LocalDateTime scheduledTime;
-
-    private boolean sent = false;
-
     public ReservationAlarm(Reservation reservation, AlarmTiming alarmTiming) {
+        super(
+                reservation.getMember(),
+                "예약 알림",
+                reservation.getFacility().getName() + "예약" + alarmTiming.getDisplayName() + "입니다.",
+                reservation.calculateScheduledTime(alarmTiming)
+        );
         this.reservation = reservation;
         this.alarmTiming = alarmTiming;
-        this.scheduledTime = reservation.calculateScheduledTime(alarmTiming);
+    }
+
+    @Override
+    public String getType() {
+        return "RESERVATION";
     }
 }

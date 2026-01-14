@@ -15,9 +15,9 @@ import com.example.school.reservation.application.dto.response.ReservationCreate
 import com.example.school.reservation.application.dto.response.ReservationInfo;
 import com.example.school.reservation.application.dto.response.ReservationResponse;
 import com.example.school.reservation.application.dto.response.TimeSlotWithBookedResponse;
+import com.example.school.reservation.domain.AlarmRepository;
 import com.example.school.reservation.domain.Reservation;
 import com.example.school.reservation.domain.ReservationAlarm;
-import com.example.school.reservation.domain.ReservationAlarmRepository;
 import com.example.school.reservation.domain.ReservationPolicy;
 import com.example.school.reservation.domain.ReservationRepository;
 import com.example.school.reservation.domain.TimeSlot;
@@ -38,7 +38,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
     private final FacilityRepository facilityRepository;
-    private final ReservationAlarmRepository reservationAlarmRepository;
+    private final AlarmRepository alarmRepository;
 
     public ReservationCreateResponse createReservation(ReservationRequest request, MemberPrincipal memberPrincipal) {
         Facility facility = facilityRepository.findById(request.facilityId())
@@ -63,7 +63,7 @@ public class ReservationService {
                 .stream()
                 .map(alarmTiming -> new ReservationAlarm(reservation, alarmTiming))
                 .toList();
-        reservationAlarmRepository.saveAll(alarms);
+        alarmRepository.saveAll(alarms);
 
         return ReservationCreateResponse.from(savedReservation);
     }
