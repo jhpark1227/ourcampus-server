@@ -1,7 +1,7 @@
 package com.example.school.review.application;
 
+import com.example.school.facility.domain.Facility;
 import com.example.school.facility.domain.FacilityRepository;
-import com.example.school.facility.domain.ReservableFacility;
 import com.example.school.file.application.FileManager;
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.exception.ApplicationException;
@@ -97,7 +97,7 @@ public class ReviewService {
     }
 
     public Page<ReviewResponse> findReviewByFacilityId(long facilityId, Pageable pageable) {
-        ReservableFacility facility = facilityRepository.findReservableById(facilityId)
+        Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
         return reviewRepository.findByReservation_FacilityOrderByCreatedAtDesc(facility, pageable)
                 .map(ReviewResponse::from);
@@ -110,7 +110,7 @@ public class ReviewService {
     }
 
     public ReviewStatisticsResponse getReviewStatistics(long facilityId) {
-        ReservableFacility facility = facilityRepository.findReservableById(facilityId)
+        Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
         List<ReviewStarRatingCount> starRatingCounts = reviewRepository.getStarRatingCounts(facility);
         return ReviewStatisticsResponse.of(starRatingCounts);

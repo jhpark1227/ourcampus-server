@@ -1,7 +1,6 @@
 package com.example.school.review.domain;
 
 import com.example.school.facility.domain.Facility;
-import com.example.school.facility.domain.ReservableFacility;
 import com.example.school.member.domain.Member;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -13,10 +12,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRep
 
     List<Review> findByReservation_MemberOrderByCreatedAt(Member member);
 
-    Page<Review> findByReservation_FacilityOrderByCreatedAtDesc(ReservableFacility facility, Pageable page);
+    Page<Review> findByReservation_FacilityOrderByCreatedAtDesc(Facility facility, Pageable page);
 
     @Query("""
-                SELECT AVG(review.starRating.value)
+                SELECT IFNULL(AVG(review.starRating.value), 0)
                 FROM Review review
                 WHERE review.reservation.facility = :facility
             """)

@@ -1,6 +1,7 @@
 package com.example.school.facility.domain;
 
 import com.example.school.global.domain.BaseEntity;
+import com.example.school.reservation.domain.ReservationPolicy;
 import com.example.school.university.domain.University;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.ElementCollection;
@@ -54,8 +55,10 @@ public class Facility extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private FacilityCategory category;
 
+    private ReservationPolicy reservationPolicy;
+
     @ElementCollection
-    protected List<OperationTime> operationTimes = new ArrayList<>();
+    private List<OperationTime> operationTimes = new ArrayList<>();
 
     @ElementCollection
     private List<String> images = new ArrayList<>();
@@ -70,9 +73,5 @@ public class Facility extends BaseEntity {
 
     public Optional<Building> getBuilding() {
         return Optional.ofNullable(building);
-    }
-
-    public boolean reservable() {
-        return false;
     }
 }

@@ -2,7 +2,9 @@ package com.example.school.reservation.domain;
 
 import com.example.school.facility.domain.Facility;
 import com.example.school.global.exception.ApplicationException;
+import com.example.school.member.domain.Email;
 import com.example.school.member.domain.Member;
+import com.example.school.member.domain.Password;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,11 +15,17 @@ class ReservationTest {
 
     @Test
     void 예약_인원이_1미만이면_예외가_발생한다() {
-        Facility facility = Facility.builder()
-                .build();
-        Member member = Member.builder()
-                .email("email@email.com")
-                .build();
+        Facility facility = new Facility(
+
+        )
+        Member member = Member.create(
+                        "이름",
+                        new Email("email@email.com"),
+                        new Password(""),
+                        "profileImageUrl",
+                "20202020",
+
+                )
         LocalDateTime now = LocalDateTime.now();
         Assertions.assertThatThrownBy(() -> {
             Reservation.builder()

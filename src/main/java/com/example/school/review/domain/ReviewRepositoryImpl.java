@@ -2,7 +2,7 @@ package com.example.school.review.domain;
 
 import static com.example.school.review.domain.QReview.review;
 
-import com.example.school.facility.domain.ReservableFacility;
+import com.example.school.facility.domain.Facility;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -16,7 +16,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ReviewStarRatingCount> getStarRatingCounts(ReservableFacility facility) {
+    public List<ReviewStarRatingCount> getStarRatingCounts(Facility facility) {
         return queryFactory
                 .select(Projections.constructor(ReviewStarRatingCount.class, review.starRating, review.count()))
                 .from(review)

@@ -1,11 +1,9 @@
-package com.example.school.facility.domain;
+package com.example.school.reservation.domain;
 
 import com.example.school.global.apiPayload.status.ErrorStatus;
 import com.example.school.global.exception.ApplicationException;
-import com.example.school.reservation.domain.Reservation;
-import com.example.school.reservation.domain.TimeSlot;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,18 +12,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Entity
-@DiscriminatorValue("RESERVABLE")
-public class ReservableFacility extends Facility {
-
+@Embeddable
+public record ReservationPolicy(
+        boolean reservable,
+        @ElementCollection
+        List<AvailableTime> availableTimes
+) {
     private static final Duration RESERVATION_TIME_UNIT = Duration.ofMinutes(60);
     private static final Duration RESERVATION_DURATION_LIMIT = RESERVATION_TIME_UNIT.multipliedBy(3);
 
     public List<TimeSlot> getTimeSlots(LocalDate date) {
         List<TimeSlot> timeSlots = new ArrayList<>();
-        for (OperationTime operationTime : operationTimes) {
-            LocalDateTime operationStartTime = operationTime.startTime().toDateTime(date);
-            LocalDateTime operationEndTime = operationTime.endTime().toDateTime(date);
+        for (AvailableTime availableTime : availableTimes) {
+            LocalDateTime operationStartTime = availableTime.startTime().toDateTime(date);
+            LocalDateTime operationEndTime = availableTime.endTime().toDateTime(date);
             LocalDateTime reservationStartTime = operationStartTime;
             while (true) {
                 LocalDateTime reservationEndTime = reservationStartTime.plus(RESERVATION_TIME_UNIT);
@@ -56,7 +56,7 @@ public class ReservableFacility extends Facility {
         if (timeSlot.isLongerThan(RESERVATION_DURATION_LIMIT)) {
             throw new ApplicationException(ErrorStatus.INVALID_TIMESLOT);
         }
-        boolean isWithinOperationTime = operationTimes.stream()
+        boolean isWithinOperationTime = availableTimes.stream()
                 .anyMatch(operationTime -> {
                     LocalDateTime opStart = operationTime.startTime().toDateTime(date);
                     LocalDateTime opEnd = operationTime.endTime().toDateTime(date);
@@ -70,10 +70,5 @@ public class ReservableFacility extends Facility {
 
     public Duration getReservationDurationLimit() {
         return RESERVATION_DURATION_LIMIT;
-    }
-
-    @Override
-    public boolean reservable() {
-        return true;
     }
 }

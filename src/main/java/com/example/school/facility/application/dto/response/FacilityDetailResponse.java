@@ -36,7 +36,7 @@ public record FacilityDetailResponse(
                         .map(OperationTimeResponse::from)
                         .toList(),
                 facility.getBuilding().isPresent() ? BuildingResponse.from(facility.getBuilding().get()) : null,
-                facility.reservable(),
+                facility.getReservationPolicy().reservable(),
                 averageStarRating
         );
     }
