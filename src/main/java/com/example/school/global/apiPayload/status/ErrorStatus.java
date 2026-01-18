@@ -63,7 +63,8 @@ public enum ErrorStatus {
     WRONG_EMAIL_CODE(HttpStatus.TOO_MANY_REQUESTS, "AUTH_40019", "잘못된 인증번호입니다."),
     EXPIRED_EMAIL_CODE(HttpStatus.BAD_REQUEST, "AUTH_40021", "만료된 인증번호입니다."),
     WRONG_VERIFICATION_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_40020", "회원가입할 수 없습니다."),
-    MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "AUTH_40020", "이미 존재하는 회원입니다.");
+    MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "AUTH_40020", "이미 존재하는 회원입니다."),
+    LIVE_SEAT_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "AUTH_40020", "실시간 현황을 제공하지 않는 학교입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

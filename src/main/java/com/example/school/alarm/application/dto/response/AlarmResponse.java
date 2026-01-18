@@ -8,14 +8,17 @@ public record AlarmResponse(
         String title,
         String message,
         LocalDateTime scheduledTime,
+        boolean checked,
         String type
 ) {
     public static AlarmResponse from(Alarm alarm) {
+        System.out.println(alarm.isChecked());
         return new AlarmResponse(
                 alarm.getId(),
                 alarm.getTitle(),
                 alarm.getMessage(),
                 alarm.getScheduledTime(),
+                alarm.isChecked(),
                 alarm.getType()
         );
     }

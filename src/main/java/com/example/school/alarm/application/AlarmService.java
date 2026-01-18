@@ -24,11 +24,12 @@ public class AlarmService {
     public List<AlarmResponse> getMyAlarms(long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
-        List<Alarm> alarms = alarmRepository.findSendAlarmByMember(member);
-        alarms.forEach(Alarm::read);
-        return alarms.stream()
+        List<Alarm> alarms = alarmRepository.findSendAlarmByMember((member));
+        List<AlarmResponse> responses = alarms.stream()
                 .map(AlarmResponse::from)
                 .toList();
+        alarms.forEach(Alarm::read);
+        return responses;
     }
 
     public UnreadAlarmResponse getMyUnreadAlarmCount(long memberId) {

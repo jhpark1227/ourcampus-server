@@ -1,8 +1,8 @@
 package com.example.school.facility.presentation;
 
 import com.example.school.auth.domain.MemberPrincipal;
-import com.example.school.facility.application.LiveSeatInfoService;
-import com.example.school.facility.application.dto.response.LiveSeatInfoResponse;
+import com.example.school.facility.application.UsageStatusService;
+import com.example.school.facility.application.dto.response.UsageStatusResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class LiveSeatInfoController {
+public class UsageStatusController {
 
-    private final LiveSeatInfoService liveSeatInfoService;
+    private final UsageStatusService usageStatusService;
 
-    @GetMapping("/facilities/live-seat-info")
-    public Page<LiveSeatInfoResponse> getLiveSeatInfo(
+    @GetMapping("/facilities/usage-status")
+    public Page<UsageStatusResponse> getUsageStatus(
             @AuthenticationPrincipal MemberPrincipal memberPrincipal,
             @RequestParam("size") int size
     ) {
-        return liveSeatInfoService.getLiveSeatInfo(memberPrincipal.universityId(), PageRequest.ofSize(size));
+        return usageStatusService.getUsageStatus(memberPrincipal.universityId(), PageRequest.ofSize(size));
     }
 }

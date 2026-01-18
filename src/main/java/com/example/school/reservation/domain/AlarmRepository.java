@@ -13,6 +13,7 @@ public interface AlarmRepository extends JpaRepository<Alarm, Long> {
                 FROM Alarm alarm
                 WHERE alarm.member = :member
                 AND alarm.scheduledTime <= NOW()
+                ORDER BY alarm.scheduledTime DESC
             """)
     List<Alarm> findSendAlarmByMember(Member member);
 
