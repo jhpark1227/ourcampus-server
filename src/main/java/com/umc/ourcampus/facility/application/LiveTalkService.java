@@ -1,0 +1,43 @@
+package com.umc.ourcampus.facility.application;
+
+import com.umc.ourcampus.member.domain.MemberRepository;
+import com.umc.ourcampus.facility.application.dto.request.LiveTalkRequest;
+import com.umc.ourcampus.facility.application.dto.response.LiveTalkResponse;
+import com.umc.ourcampus.facility.domain.Facility;
+import com.umc.ourcampus.facility.domain.FacilityRepository;
+import com.umc.ourcampus.facility.domain.LiveTalk;
+import com.umc.ourcampus.facility.domain.LiveTalkRepository;
+import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ApplicationException;
+import com.umc.ourcampus.member.domain.Member;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class LiveTalkService {
+
+    private final LiveTalkRepository liveTalkRepository;
+    private final FacilityRepository facilityRepository;
+    private final MemberRepository memberRepository;
+
+    public long createLiveTalk(long memberId, long facilityId, LiveTalkRequest request) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
+        LiveTalk liveTalk = LiveTalk.from(request.message(), facility, member);
+        return liveTalkRepository.save(liveTalk).getId();
+    }
+
+    public Page<LiveTalkResponse> getFacilityLiveTalk(long facilityId, Pageable pageable) {
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
+        return liveTalkRepository.findByFacilityOrderByCreatedAtDesc(facility, pageable)
+                .map(LiveTalkResponse::from);
+    }
+}
