@@ -11,7 +11,7 @@ class PasswordTest {
 
     @Test
     void 비밀번호를_생성한다() {
-        String passwordValue = "12345678";
+        String passwordValue = "testPassword123";
 
         Assertions.assertThatCode(() -> new Password(passwordValue))
                 .doesNotThrowAnyException();
