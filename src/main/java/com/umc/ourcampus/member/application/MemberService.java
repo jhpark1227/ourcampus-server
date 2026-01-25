@@ -106,9 +106,6 @@ public class MemberService {
     public void changeProfileImage(ProfileImageChangeRequest request, long memberId) {
         Member member = findMemberById(memberId);
         validateImageUrl(request.profileImage());
-        if (member.getProfileImage() != null) {
-            fileManager.delete(member.getProfileImage());
-        }
         member.changeProfileImage(request.profileImage());
     }
 

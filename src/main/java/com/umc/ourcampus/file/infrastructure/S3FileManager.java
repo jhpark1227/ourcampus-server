@@ -74,15 +74,6 @@ public class S3FileManager implements FileManager {
         return true;
     }
 
-    @Override
-    public void delete(String fileUrl) {
-        DeleteObjectRequest request = DeleteObjectRequest.builder()
-                .bucket(bucket)
-                .key(parseKey(fileUrl))
-                .build();
-        s3Client.deleteObject(request);
-    }
-
     private String parseKey(String url) {
         if (url.length() < 8) {
             return url;
