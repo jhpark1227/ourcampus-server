@@ -1,6 +1,5 @@
 package com.umc.ourcampus.auth.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.ourcampus.auth.domain.LoginTokenIssuer;
 import com.umc.ourcampus.auth.presentation.JwtAuthenticationFilter;
 import java.util.List;
@@ -20,7 +19,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final ObjectMapper objectMapper;
     private final LoginTokenIssuer loginTokenIssuer;
 
     @Bean
@@ -64,6 +62,6 @@ public class SecurityConfig {
     }
 
     private JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(loginTokenIssuer, objectMapper);
+        return new JwtAuthenticationFilter(loginTokenIssuer);
     }
 }
