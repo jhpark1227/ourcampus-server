@@ -14,7 +14,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                 SELECT r
                 FROM Reservation r
                 WHERE r.facility = :facility
-                AND DATE_FORMAT(r.timeSlot.startTime, '%Y-%m-%d') = DATE_FORMAT(str_to_date(:date, '%Y-%m-%d'), '%Y-%m-%d')
+                AND CAST(r.timeSlot.startTime AS DATE) = CAST(:date AS DATE)
             """)
     List<Reservation> findByFacilityAndDate(Facility facility, LocalDate date);
 
