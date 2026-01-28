@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS department
     university_id bigint,
     PRIMARY KEY (id),
     UNIQUE KEY uk_department_name (name),
-    KEY idx_building_university_id (university_id),
+    KEY idx_department_university_id (university_id),
     CONSTRAINT fk_department_university FOREIGN KEY (university_id) REFERENCES university (id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -296,7 +296,7 @@ CREATE TABLE IF NOT EXISTS notice
 CREATE TABLE IF NOT EXISTS refresh_token
 (
     id        bigint NOT NULL AUTO_INCREMENT,
-    value     varchar(255),
+    `value`     varchar(255),
     member_id bigint,
     PRIMARY KEY (id),
     KEY idx_refresh_token_member_id (member_id),
