@@ -97,8 +97,8 @@ jobs:
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $ECR_REGISTRY
             
             cd /home/ubuntu/was
-            docker-compose -f compose.was.yml down || true
-            docker-compose -f compose.was.yml pull
-            docker-compose -f compose.was.yml up -d
+            docker compose -f compose.was.yml down || true
+            docker compose -f compose.was.yml pull
+            docker compose -f compose.was.yml up -d
             
             docker image prune -af --filter "until=24h"
