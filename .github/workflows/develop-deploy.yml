@@ -82,7 +82,7 @@ jobs:
           key: ${{ secrets.DEV_EC2_SSH_KEY }}
           source: "ourcampus-server-submodule/docker/dev/compose.was.yml"
           target: "/home/ubuntu/was"
-          strip_components: 4
+          strip_components: 3
 
       - name: EC2에서 컨테이너 배포
         uses: appleboy/ssh-action@v1.0.3
