@@ -82,7 +82,7 @@ jobs:
           key: ${{ secrets.DEV_EC2_SSH_KEY }}
           source: "ourcampus-server-submodule/docker/dev/was/docker-compose.yml"
           target: "/home/ubuntu/was"
-          strip_components: 3
+          strip_components: 4
 
       - name: EC2에서 컨테이너 배포
         uses: appleboy/ssh-action@v1.0.3
@@ -97,8 +97,8 @@ jobs:
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $ECR_REGISTRY
             
             cd /home/ubuntu/was
-            docker compose -f compose.was.yml down || true
-            docker compose -f compose.was.yml pull
-            docker compose -f compose.was.yml up -d
+            docker compose down || true
+            docker compose pull
+            docker compose up -d
             
             docker image prune -af --filter "until=24h"
