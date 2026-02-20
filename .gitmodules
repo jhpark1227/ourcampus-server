@@ -1,0 +1,3 @@
+[submodule "ourcampus-server-submodule"]
+	path = ourcampus-server-submodule
+	url = https://github.com/jhpark1227/ourcampus-server-submodule.git
