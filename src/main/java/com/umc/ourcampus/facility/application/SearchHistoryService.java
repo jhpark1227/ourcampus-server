@@ -6,7 +6,7 @@ import com.umc.ourcampus.facility.application.dto.response.SearchKeywordResponse
 import com.umc.ourcampus.facility.domain.SearchHistory;
 import com.umc.ourcampus.facility.domain.SearchHistoryRepository;
 import com.umc.ourcampus.facility.domain.SearchKeyword;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.member.domain.Member;
 import com.umc.ourcampus.university.domain.University;

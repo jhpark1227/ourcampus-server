@@ -1,6 +1,6 @@
 package com.umc.ourcampus.reservation.domain;
 
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.facility.domain.Facility;
 import com.umc.ourcampus.global.domain.BaseEntity;

@@ -1,7 +1,7 @@
 package com.umc.ourcampus.notice.application;
 
 import com.umc.ourcampus.notice.domain.NoticeType;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.notice.application.dto.response.NoticeDetailResponse;
 import com.umc.ourcampus.notice.application.dto.response.NoticeResponse;

@@ -1,6 +1,6 @@
 package com.umc.ourcampus.member.application;
 
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.member.application.dto.request.InquireRequest;
 import com.umc.ourcampus.member.application.dto.response.InquiryResponse;

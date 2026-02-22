@@ -3,7 +3,7 @@ package com.umc.ourcampus.file.application;
 import com.umc.ourcampus.file.application.dto.request.FileUploadRequest;
 import com.umc.ourcampus.file.application.dto.response.FileUploadResponse;
 import com.umc.ourcampus.file.application.dto.response.ImageUploadResponse;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

@@ -3,7 +3,7 @@ package com.umc.ourcampus.facility.application;
 import com.umc.ourcampus.facility.application.dto.response.BuildingResponse;
 import com.umc.ourcampus.facility.domain.Building;
 import com.umc.ourcampus.facility.domain.BuildingRepository;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.university.domain.University;
 import com.umc.ourcampus.university.domain.UniversityRepository;

@@ -1,13 +1,15 @@
 package com.umc.ourcampus.auth.application;
 
+import com.umc.ourcampus.auth.application.dto.request.AccessTokenReissueRequest;
 import com.umc.ourcampus.auth.application.dto.request.LoginRequest;
 import com.umc.ourcampus.auth.application.dto.request.LogoutRequest;
+import com.umc.ourcampus.auth.application.dto.response.AccessTokenReissueResponse;
 import com.umc.ourcampus.auth.application.dto.response.LoginResponse;
 import com.umc.ourcampus.auth.domain.LoginTokenIssuer;
 import com.umc.ourcampus.auth.domain.RefreshToken;
 import com.umc.ourcampus.auth.domain.RefreshTokenRepository;
 import com.umc.ourcampus.auth.domain.TokenPair;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.member.domain.Member;
 import com.umc.ourcampus.member.domain.MemberRepository;
@@ -43,5 +45,18 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenRepository.findByValueAndMember(request.refreshToken(), member)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.REFRESHTOKEN_NOT_FOUND));
         refreshTokenRepository.delete(refreshToken);
+    }
+
+    public AccessTokenReissueResponse refreshAccessToken(AccessTokenReissueRequest request) {
+        loginTokenIssuer.validate(request.refreshToken());
+        RefreshToken oldRefreshToken = refreshTokenRepository.findByValue(request.refreshToken())
+                .stream().findFirst()
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.REFRESHTOKEN_NOT_FOUND));
+        refreshTokenRepository.delete(oldRefreshToken);
+
+        TokenPair newTokenPair = loginTokenIssuer.issueLoginTokenPair(oldRefreshToken.getMember());
+        refreshTokenRepository.save(newTokenPair.refreshToken());
+
+        return AccessTokenReissueResponse.from(newTokenPair);
     }
 }

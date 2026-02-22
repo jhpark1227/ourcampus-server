@@ -1,6 +1,6 @@
 package com.umc.ourcampus.reservation.application;
 
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.reservation.application.dto.response.TimeSlotWithBookedResponse;
 import com.umc.ourcampus.facility.application.dto.response.FacilityScheduleResponse;
 import com.umc.ourcampus.facility.domain.Facility;

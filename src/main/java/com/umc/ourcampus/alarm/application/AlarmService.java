@@ -3,7 +3,7 @@ package com.umc.ourcampus.alarm.application;
 import com.umc.ourcampus.alarm.application.dto.response.AlarmResponse;
 import com.umc.ourcampus.alarm.application.dto.response.UnreadAlarmResponse;
 import com.umc.ourcampus.alarm.domain.Alarm;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.member.domain.Member;
 import com.umc.ourcampus.member.domain.MemberRepository;

@@ -1,6 +1,6 @@
 package com.umc.ourcampus.member.domain;
 
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;

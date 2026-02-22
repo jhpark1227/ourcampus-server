@@ -1,7 +1,7 @@
 package com.umc.ourcampus.university.application;
 
 import com.umc.ourcampus.university.application.dto.response.DepartmentResponse;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.university.application.dto.response.UniversityResponse;
 import com.umc.ourcampus.university.domain.DepartmentRepository;

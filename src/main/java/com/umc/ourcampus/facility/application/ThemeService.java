@@ -4,7 +4,7 @@ import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.facility.application.dto.response.ThemeResponse;
 import com.umc.ourcampus.facility.domain.Theme;
 import com.umc.ourcampus.facility.domain.ThemeRepository;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.university.domain.University;
 import com.umc.ourcampus.university.domain.UniversityRepository;
 import java.util.List;

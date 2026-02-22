@@ -12,14 +12,17 @@ import org.springframework.stereotype.Component;
 public class LoginTokenIssuer {
 
     private final Duration ACCESS_TOKEN_VALID_TIME;
+    private final Duration REFRESH_TOKEN_VALID_TIME;
 
     private final JwtProvider jwtProvider;
 
     public LoginTokenIssuer(
             @Value("${auth.jwt.access-token-expiration-minutes}") long accessTokenExpirationMinutes,
+            @Value("${auth.jwt.refresh-token-expiration-minutes}") long refreshTokenExpirationMinutes,
             JwtProvider jwtProvider
     ) {
         this.ACCESS_TOKEN_VALID_TIME = Duration.ofMinutes(accessTokenExpirationMinutes);
+        this.REFRESH_TOKEN_VALID_TIME = Duration.ofMinutes(refreshTokenExpirationMinutes);
         this.jwtProvider = jwtProvider;
     }
 
@@ -28,7 +31,7 @@ public class LoginTokenIssuer {
         claims.put("memberId", String.valueOf(member.getId()));
         claims.put("universityId", String.valueOf(member.getUniversity().getId()));
         String accessToken = jwtProvider.createToken(claims, ACCESS_TOKEN_VALID_TIME);
-        RefreshToken refreshToken = new RefreshToken(jwtProvider.createToken(claims, ACCESS_TOKEN_VALID_TIME), member);
+        RefreshToken refreshToken = new RefreshToken(jwtProvider.createToken(claims, REFRESH_TOKEN_VALID_TIME), member);
 
         return new TokenPair(accessToken, refreshToken);
     }
