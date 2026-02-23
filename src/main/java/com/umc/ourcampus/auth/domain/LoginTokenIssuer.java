@@ -1,6 +1,7 @@
 package com.umc.ourcampus.auth.domain;
 
 import com.umc.ourcampus.auth.infrastructure.JwtProvider;
+import com.umc.ourcampus.member.domain.Admin;
 import com.umc.ourcampus.member.domain.Member;
 import java.time.Duration;
 import java.util.HashMap;
@@ -36,6 +37,14 @@ public class LoginTokenIssuer {
         return new TokenPair(accessToken, refreshToken);
     }
 
+    public String issueAdminToken(Admin admin) {
+        Map<String, String> claims = new HashMap<>();
+        claims.put("type", "ADMIN");
+        claims.put("adminId", String.valueOf(admin.getId()));
+        claims.put("universityId", String.valueOf(admin.getUniversity().getId()));
+        return jwtProvider.createToken(claims, ACCESS_TOKEN_VALID_TIME);
+    }
+
     public MemberPrincipal getMemberPrincipal(String token) {
         validate(token);
         Map<String, String> claims = jwtProvider.getClaims(token);
@@ -43,6 +52,19 @@ public class LoginTokenIssuer {
                 Long.parseLong(claims.get("memberId")),
                 Long.parseLong(claims.get("universityId"))
         );
+    }
+
+    public AdminPrincipal getAdminPrincipal(String token) {
+        validate(token);
+        Map<String, String> claims = jwtProvider.getClaims(token);
+        return new AdminPrincipal(
+                Long.parseLong(claims.get("adminId")),
+                Long.parseLong(claims.get("universityId"))
+        );
+    }
+
+    public String getTokenType(String token) {
+        return jwtProvider.getClaims(token).getOrDefault("type", "MEMBER");
     }
 
     public void validate(String token) {

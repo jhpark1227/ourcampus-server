@@ -33,6 +33,9 @@ public class SecurityConfig {
                             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/admin/auth/login").permitAll()
+                        .requestMatchers("/admin/register").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/auth/logout").authenticated()
                         .requestMatchers("/members/register/**").permitAll()
                         .requestMatchers("/members/find-email").permitAll()

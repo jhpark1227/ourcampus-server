@@ -38,33 +38,38 @@ public enum ErrorStatus {
     FIND_PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "비밀번호 찾기 실패"),
     LOGIN_ERROR(HttpStatus.BAD_REQUEST, "로그인에 실패했습니다."),
     EMAIL_DUPLICATE(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
-    USERID_DUPLICATE(HttpStatus.BAD_REQUEST,  "중복된 아이디입니다."),
-    IDENTIFYNUM_FORMAT_ERROR(HttpStatus.BAD_REQUEST,  "주민번호 형식이 맞지 않습니다."),
+    USERID_DUPLICATE(HttpStatus.BAD_REQUEST, "중복된 아이디입니다."),
+    IDENTIFYNUM_FORMAT_ERROR(HttpStatus.BAD_REQUEST, "주민번호 형식이 맞지 않습니다."),
     SCHOOL_FORMAT_ERROR(HttpStatus.BAD_REQUEST, "학교 형식이 잘못되었습니다."),
     PERMISSION_ERROR(HttpStatus.FORBIDDEN, "권한이 없습니다."),
 
     FACILITY_NOT_FOUND(HttpStatus.NOT_FOUND, "시설이 없습니다."),
-    UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND,  "존재하지 않는 대학교입니다."),
+    UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 대학교입니다."),
     BUILDING_NOT_FOUND(HttpStatus.NOT_FOUND, "건물이 존재하지 않습니다."),
-    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND,  "공지사항이 존재하지 않습니다."),
+    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "공지사항이 존재하지 않습니다."),
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "테마가 존재하지 않습니다."),
-    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND,  "예약이 존재하지 않습니다."),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약이 존재하지 않습니다."),
     IMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "이미지가 존재하지 않습니다."),
     DEPARTMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "전공(학과)가 존재하지 않습니다."),
-    HEAD_COUNT_INVALID_RANGE(HttpStatus.BAD_REQUEST,  "잘못된 예약 인원입니다."),
+    HEAD_COUNT_INVALID_RANGE(HttpStatus.BAD_REQUEST, "잘못된 예약 인원입니다."),
 
     REFRESHTOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 RefreshToken이 존재하지 않습니다."),
-    SEARCH_CONDITION_ERROR(HttpStatus.BAD_REQUEST,  "잘못된 검색어입니다."),
+    SEARCH_CONDITION_ERROR(HttpStatus.BAD_REQUEST, "잘못된 검색어입니다."),
     STAR_RATING_RANGE(HttpStatus.BAD_REQUEST, "별점은 1점 이상 5점 이하의 정수입니다."),
     FACILITY_DAILY_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "이미 예약이 존재합니다."),
-    EXTENDED_TIME_ERROR(HttpStatus.BAD_REQUEST,  "연장할 시간은 기존 시간보다 이후여야 합니다."),
-    RETURN_PHOTO_REQUIRED(HttpStatus.BAD_REQUEST,  "반납 사진이 필요합니다."),
+    EXTENDED_TIME_ERROR(HttpStatus.BAD_REQUEST, "연장할 시간은 기존 시간보다 이후여야 합니다."),
+    RETURN_PHOTO_REQUIRED(HttpStatus.BAD_REQUEST, "반납 사진이 필요합니다."),
     EMAIL_COOL_TIME(HttpStatus.TOO_MANY_REQUESTS, "중복된 인증 메일 전송 요청입니다."),
     WRONG_EMAIL_CODE(HttpStatus.BAD_REQUEST, "잘못된 인증번호입니다."),
     EXPIRED_EMAIL_CODE(HttpStatus.BAD_REQUEST, "만료된 인증번호입니다."),
     WRONG_VERIFICATION_TOKEN(HttpStatus.UNAUTHORIZED, "회원가입할 수 없습니다."),
     MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 회원입니다."),
-    LIVE_SEAT_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "실시간 현황을 제공하지 않는 학교입니다.");
+    LIVE_SEAT_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "실시간 현황을 제공하지 않는 학교입니다."),
+
+    // 어드민 관련 에러
+    ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "관리자가 존재하지 않습니다."),
+    ADMIN_NOT_APPROVED(HttpStatus.FORBIDDEN, "승인되지 않은 관리자 계정입니다."),
+    ADMIN_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

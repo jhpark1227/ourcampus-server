@@ -1,11 +1,13 @@
 package com.umc.ourcampus.auth.presentation;
 
-import com.umc.ourcampus.auth.application.dto.request.AccessTokenReissueRequest;
-import com.umc.ourcampus.auth.application.dto.response.AccessTokenReissueResponse;
-import com.umc.ourcampus.auth.application.dto.response.LoginResponse;
 import com.umc.ourcampus.auth.application.AuthService;
+import com.umc.ourcampus.auth.application.dto.request.AccessTokenReissueRequest;
+import com.umc.ourcampus.auth.application.dto.request.AdminLoginRequest;
 import com.umc.ourcampus.auth.application.dto.request.LoginRequest;
 import com.umc.ourcampus.auth.application.dto.request.LogoutRequest;
+import com.umc.ourcampus.auth.application.dto.response.AccessTokenReissueResponse;
+import com.umc.ourcampus.auth.application.dto.response.AdminLoginResponse;
+import com.umc.ourcampus.auth.application.dto.response.LoginResponse;
 import com.umc.ourcampus.auth.domain.MemberPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,11 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/admin/auth/login")
+    public AdminLoginResponse adminLogin(@RequestBody @Valid AdminLoginRequest request) {
+        return authService.adminLogin(request);
     }
 
     @PostMapping("/auth/refresh")

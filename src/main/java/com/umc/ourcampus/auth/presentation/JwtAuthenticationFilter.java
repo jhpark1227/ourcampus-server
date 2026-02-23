@@ -1,6 +1,8 @@
 package com.umc.ourcampus.auth.presentation;
 
+import com.umc.ourcampus.auth.domain.AdminPrincipal;
 import com.umc.ourcampus.auth.domain.LoginTokenIssuer;
+import com.umc.ourcampus.auth.domain.MemberPrincipal;
 import com.umc.ourcampus.global.exception.ErrorStatus;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -8,11 +10,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -56,10 +59,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private Authentication getAuthentication(String token) {
-        return new UsernamePasswordAuthenticationToken(
-                loginTokenIssuer.getMemberPrincipal(token),
-                "",
-                new HashSet<>()
-        );
+        if ("ADMIN".equals(loginTokenIssuer.getTokenType(token))) {
+            AdminPrincipal principal = loginTokenIssuer.getAdminPrincipal(token);
+            return new UsernamePasswordAuthenticationToken(principal, "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        }
+        MemberPrincipal principal = loginTokenIssuer.getMemberPrincipal(token);
+        return new UsernamePasswordAuthenticationToken(principal, "", List.of(new SimpleGrantedAuthority("ROLE_USER")));
     }
 }
