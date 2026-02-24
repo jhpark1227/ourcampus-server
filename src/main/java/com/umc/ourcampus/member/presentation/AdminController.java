@@ -1,6 +1,6 @@
 package com.umc.ourcampus.member.presentation;
 
-import com.umc.ourcampus.auth.domain.AdminPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.member.application.AdminService;
 import com.umc.ourcampus.member.application.dto.request.AdminRegisterRequest;
 import com.umc.ourcampus.member.application.dto.response.AdminInfoResponse;
@@ -23,7 +23,7 @@ public class AdminController {
     }
 
     @GetMapping("/admin/me")
-    public AdminInfoResponse getMyInfo(@AuthenticationPrincipal AdminPrincipal principal) {
-        return adminService.getMyInfo(principal.adminId());
+    public AdminInfoResponse getMyInfo(@AuthenticationPrincipal UserPrincipal principal) {
+        return adminService.getMyInfo(principal.memberId());
     }
 }

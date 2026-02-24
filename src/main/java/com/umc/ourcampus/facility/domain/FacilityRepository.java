@@ -18,4 +18,6 @@ public interface FacilityRepository extends JpaRepository<Facility, Long>, Facil
     List<Facility> findByBuilding(Building building);
 
     List<Facility> findByUniversityAndCategory(University university, FacilityCategory category);
+
+    List<Facility> findByUniversity(University university);
 }

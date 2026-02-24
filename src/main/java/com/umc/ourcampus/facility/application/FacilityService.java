@@ -1,21 +1,23 @@
 package com.umc.ourcampus.facility.application;
 
-import com.umc.ourcampus.facility.domain.Facility;
-import com.umc.ourcampus.facility.domain.FacilityRepository;
-import com.umc.ourcampus.facility.domain.FacilityThemeRepository;
-import com.umc.ourcampus.university.domain.UniversityRepository;
+import com.umc.ourcampus.facility.application.dto.request.AddFacilityToThemeRequest;
+import com.umc.ourcampus.facility.application.dto.request.AssignBuildingRequest;
 import com.umc.ourcampus.facility.application.dto.response.FacilityDetailResponse;
 import com.umc.ourcampus.facility.application.dto.response.FacilityResponse;
 import com.umc.ourcampus.facility.domain.Building;
 import com.umc.ourcampus.facility.domain.BuildingRepository;
+import com.umc.ourcampus.facility.domain.Facility;
 import com.umc.ourcampus.facility.domain.FacilityCategory;
+import com.umc.ourcampus.facility.domain.FacilityRepository;
 import com.umc.ourcampus.facility.domain.FacilityTheme;
+import com.umc.ourcampus.facility.domain.FacilityThemeRepository;
 import com.umc.ourcampus.facility.domain.Theme;
 import com.umc.ourcampus.facility.domain.ThemeRepository;
-import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.review.domain.ReviewRepository;
 import com.umc.ourcampus.university.domain.University;
+import com.umc.ourcampus.university.domain.UniversityRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -77,6 +79,35 @@ public class FacilityService {
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
         return facilityRepository.findByNameLikeAndUniversity(keyword, university)
                 .stream()
+                .map(FacilityResponse::from)
+                .toList();
+    }
+
+    public void addFacilityToTheme(long themeId, AddFacilityToThemeRequest request) {
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.THEME_NOT_FOUND));
+        Facility facility = facilityRepository.findById(request.facilityId())
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
+        if (!facilityThemeRepository.findByFacilityAndTheme(facility, theme).isEmpty()) {
+            throw new ApplicationException(ErrorStatus.DUPLICATED_FACILITY_THEME);
+        }
+        FacilityTheme facilityTheme = new FacilityTheme(facility, theme);
+        facilityThemeRepository.save(facilityTheme);
+    }
+
+    public void addFacilityToBuilding(long facilityId, AssignBuildingRequest request) {
+        Building building = buildingRepository.findById(request.buildingId())
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.THEME_NOT_FOUND));
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
+        facility.changeBuilding(building);
+    }
+
+    public List<FacilityResponse> getFacilities(long universityId) {
+        University university = universityRepository.findById(universityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
+        List<Facility> facilities = facilityRepository.findByUniversity(university);
+        return facilities.stream()
                 .map(FacilityResponse::from)
                 .toList();
     }

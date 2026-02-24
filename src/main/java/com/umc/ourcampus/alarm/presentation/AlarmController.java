@@ -1,9 +1,9 @@
 package com.umc.ourcampus.alarm.presentation;
 
-import com.umc.ourcampus.alarm.application.dto.response.AlarmResponse;
 import com.umc.ourcampus.alarm.application.AlarmService;
+import com.umc.ourcampus.alarm.application.dto.response.AlarmResponse;
 import com.umc.ourcampus.alarm.application.dto.response.UnreadAlarmResponse;
-import com.umc.ourcampus.auth.domain.MemberPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,12 +17,12 @@ public class AlarmController {
     private final AlarmService alarmService;
 
     @GetMapping("/me/alarms")
-    public List<AlarmResponse> getMyAlarms(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        return alarmService.getMyAlarms(memberPrincipal.memberId());
+    public List<AlarmResponse> getMyAlarms(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return alarmService.getMyAlarms(userPrincipal.memberId());
     }
 
     @GetMapping("/me/alarms/unread-count")
-    public UnreadAlarmResponse getMyUnreadAlarmCount(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        return alarmService.getMyUnreadAlarmCount(memberPrincipal.memberId());
+    public UnreadAlarmResponse getMyUnreadAlarmCount(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return alarmService.getMyUnreadAlarmCount(userPrincipal.memberId());
     }
 }

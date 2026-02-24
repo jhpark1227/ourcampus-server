@@ -1,6 +1,6 @@
 package com.umc.ourcampus.facility.application;
 
-import com.umc.ourcampus.auth.domain.AdminPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.dto.request.ThemeCreateRequest;
 import com.umc.ourcampus.facility.application.dto.response.ThemeResponse;
 import com.umc.ourcampus.facility.domain.Theme;
@@ -30,7 +30,7 @@ public class ThemeService {
         return themes.stream().map(ThemeResponse::from).toList();
     }
 
-    public void createTheme(AdminPrincipal principal, long universityId, ThemeCreateRequest request) {
+    public void createTheme(UserPrincipal principal, long universityId, ThemeCreateRequest request) {
         if (principal.universityId() != universityId) {
             throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
         }

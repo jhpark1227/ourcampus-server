@@ -1,6 +1,6 @@
 package com.umc.ourcampus.review.presentation;
 
-import com.umc.ourcampus.auth.domain.MemberPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.review.application.ReviewService;
 import com.umc.ourcampus.review.application.dto.request.ReviewModifyRequest;
 import com.umc.ourcampus.review.application.dto.request.ReviewRequest;
@@ -28,8 +28,8 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping("/reviews")
-    public ResponseEntity<Void> createReview(@RequestBody ReviewRequest request, @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        Long reviewId = reviewService.saveReview(request, memberPrincipal.memberId());
+    public ResponseEntity<Void> createReview(@RequestBody ReviewRequest request, @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        Long reviewId = reviewService.saveReview(request, userPrincipal.memberId());
         return ResponseEntity.created(URI.create("/reviews/" + reviewId))
                 .build();
     }
@@ -48,8 +48,8 @@ public class ReviewController {
     }
 
     @GetMapping("/me/reviews")
-    public List<ReviewResponse> getMyReviews(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        return reviewService.findReviewsByMemberId(memberPrincipal.memberId());
+    public List<ReviewResponse> getMyReviews(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return reviewService.findReviewsByMemberId(userPrincipal.memberId());
     }
 
     @GetMapping("/facilities/{facilityId}/reviews/statistics")
@@ -59,18 +59,18 @@ public class ReviewController {
 
     @PutMapping("/reviews/{reviewId}")
     public ResponseEntity<Void> modifyReview(
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("reviewId") Long reviewId,
             @RequestBody ReviewModifyRequest request
     ) {
-        reviewService.modifyReview(memberPrincipal.memberId(), reviewId, request);
+        reviewService.modifyReview(userPrincipal.memberId(), reviewId, request);
         return ResponseEntity.noContent()
                 .build();
     }
 
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<Void> deleteReview(
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("reviewId") Long reviewId
     ) {
         reviewService.deleteReviewById(reviewId);

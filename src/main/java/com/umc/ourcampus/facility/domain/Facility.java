@@ -93,6 +93,11 @@ public class Facility extends BaseEntity {
         this.university = university;
     }
 
+    public void changeBuilding(Building building) {
+        this.building = building;
+    }
+
+
     public Optional<Building> getBuilding() {
         return Optional.ofNullable(building);
     }

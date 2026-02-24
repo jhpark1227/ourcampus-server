@@ -1,8 +1,7 @@
 package com.umc.ourcampus.auth.presentation;
 
-import com.umc.ourcampus.auth.domain.AdminPrincipal;
 import com.umc.ourcampus.auth.domain.LoginTokenIssuer;
-import com.umc.ourcampus.auth.domain.MemberPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.global.exception.ErrorStatus;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -59,11 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private Authentication getAuthentication(String token) {
-        if ("ADMIN".equals(loginTokenIssuer.getTokenType(token))) {
-            AdminPrincipal principal = loginTokenIssuer.getAdminPrincipal(token);
-            return new UsernamePasswordAuthenticationToken(principal, "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
-        }
-        MemberPrincipal principal = loginTokenIssuer.getMemberPrincipal(token);
-        return new UsernamePasswordAuthenticationToken(principal, "", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        UserPrincipal principal = loginTokenIssuer.getMemberPrincipal(token);
+        return new UsernamePasswordAuthenticationToken(principal, "", List.of(new SimpleGrantedAuthority("ROLE_" + principal.role())));
     }
 }

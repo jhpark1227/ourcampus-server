@@ -1,6 +1,6 @@
 package com.umc.ourcampus.facility.presentation;
 
-import com.umc.ourcampus.auth.domain.AdminPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.ThemeService;
 import com.umc.ourcampus.facility.application.dto.request.ThemeCreateRequest;
 import com.umc.ourcampus.facility.application.dto.response.ThemeResponse;
@@ -21,7 +21,7 @@ public class ThemeController {
 
     @PostMapping("/admin/universities/{universityId}/themes")
     public void createTheme(
-            @AuthenticationPrincipal AdminPrincipal principal,
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("universityId") long universityId,
             @RequestBody ThemeCreateRequest request
     ) {

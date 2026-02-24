@@ -1,6 +1,7 @@
 package com.umc.ourcampus.auth.domain;
 
-public record MemberPrincipal(
+public record UserPrincipal(
+        Role role,
         long memberId,
         long universityId
 ) {

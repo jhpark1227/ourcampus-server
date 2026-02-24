@@ -1,6 +1,6 @@
 package com.umc.ourcampus.facility.presentation;
 
-import com.umc.ourcampus.auth.domain.MemberPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.UsageStatusService;
 import com.umc.ourcampus.facility.application.dto.response.UsageStatusResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +19,9 @@ public class UsageStatusController {
 
     @GetMapping("/facilities/usage-status")
     public Page<UsageStatusResponse> getUsageStatus(
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam("size") int size
     ) {
-        return usageStatusService.getUsageStatus(memberPrincipal.universityId(), PageRequest.ofSize(size));
+        return usageStatusService.getUsageStatus(userPrincipal.universityId(), PageRequest.ofSize(size));
     }
 }

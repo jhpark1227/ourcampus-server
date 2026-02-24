@@ -8,7 +8,7 @@ import com.umc.ourcampus.auth.application.dto.request.LogoutRequest;
 import com.umc.ourcampus.auth.application.dto.response.AccessTokenReissueResponse;
 import com.umc.ourcampus.auth.application.dto.response.AdminLoginResponse;
 import com.umc.ourcampus.auth.application.dto.response.LoginResponse;
-import com.umc.ourcampus.auth.domain.MemberPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,10 +43,10 @@ public class AuthController {
 
     @DeleteMapping("/auth/logout")
     public ResponseEntity<Void> logout(
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody LogoutRequest request
     ) {
-        authService.logout(request, memberPrincipal.memberId());
+        authService.logout(request, userPrincipal.memberId());
         return ResponseEntity.noContent().build();
     }
 }

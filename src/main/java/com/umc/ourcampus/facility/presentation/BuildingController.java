@@ -1,6 +1,6 @@
 package com.umc.ourcampus.facility.presentation;
 
-import com.umc.ourcampus.auth.domain.AdminPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.BuildingService;
 import com.umc.ourcampus.facility.application.dto.request.BuildingCreateRequest;
 import com.umc.ourcampus.facility.application.dto.response.BuildingResponse;
@@ -21,7 +21,7 @@ public class BuildingController {
 
     @PostMapping("/admin/universities/{universityId}/buildings")
     public void createBuilding(
-            @AuthenticationPrincipal AdminPrincipal principal,
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("universityId") long universityId,
             @RequestBody BuildingCreateRequest request
     ) {

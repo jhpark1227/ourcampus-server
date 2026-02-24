@@ -1,6 +1,6 @@
 package com.umc.ourcampus.facility.presentation;
 
-import com.umc.ourcampus.auth.domain.MemberPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.LiveTalkService;
 import com.umc.ourcampus.facility.application.dto.request.LiveTalkRequest;
 import com.umc.ourcampus.facility.application.dto.response.LiveTalkResponse;
@@ -28,9 +28,9 @@ public class LiveTalkController {
     public ResponseEntity<Void> createLiveTalk(
             @PathVariable("facilityId") long facilityId,
             @RequestBody @Valid LiveTalkRequest liveTalkRequest,
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal
+            @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        long liveTalkId = liveTalkService.createLiveTalk(memberPrincipal.memberId(), facilityId, liveTalkRequest);
+        long liveTalkId = liveTalkService.createLiveTalk(userPrincipal.memberId(), facilityId, liveTalkRequest);
         return ResponseEntity.created(URI.create("/live-talk/" + liveTalkId)).build();
     }
 

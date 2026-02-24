@@ -29,7 +29,8 @@ public class LoginTokenIssuer {
 
     public TokenPair issueLoginTokenPair(Member member) {
         Map<String, String> claims = new HashMap<>();
-        claims.put("memberId", String.valueOf(member.getId()));
+        claims.put("role", "MEMBER");
+        claims.put("id", String.valueOf(member.getId()));
         claims.put("universityId", String.valueOf(member.getUniversity().getId()));
         String accessToken = jwtProvider.createToken(claims, ACCESS_TOKEN_VALID_TIME);
         RefreshToken refreshToken = new RefreshToken(jwtProvider.createToken(claims, REFRESH_TOKEN_VALID_TIME), member);
@@ -39,32 +40,20 @@ public class LoginTokenIssuer {
 
     public String issueAdminToken(Admin admin) {
         Map<String, String> claims = new HashMap<>();
-        claims.put("type", "ADMIN");
-        claims.put("adminId", String.valueOf(admin.getId()));
+        claims.put("role", "ADMIN");
+        claims.put("id", String.valueOf(admin.getId()));
         claims.put("universityId", String.valueOf(admin.getUniversity().getId()));
         return jwtProvider.createToken(claims, ACCESS_TOKEN_VALID_TIME);
     }
 
-    public MemberPrincipal getMemberPrincipal(String token) {
+    public UserPrincipal getMemberPrincipal(String token) {
         validate(token);
         Map<String, String> claims = jwtProvider.getClaims(token);
-        return new MemberPrincipal(
-                Long.parseLong(claims.get("memberId")),
+        return new UserPrincipal(
+                Role.from(claims.get("role")),
+                Long.parseLong(claims.get("id")),
                 Long.parseLong(claims.get("universityId"))
         );
-    }
-
-    public AdminPrincipal getAdminPrincipal(String token) {
-        validate(token);
-        Map<String, String> claims = jwtProvider.getClaims(token);
-        return new AdminPrincipal(
-                Long.parseLong(claims.get("adminId")),
-                Long.parseLong(claims.get("universityId"))
-        );
-    }
-
-    public String getTokenType(String token) {
-        return jwtProvider.getClaims(token).getOrDefault("type", "MEMBER");
     }
 
     public void validate(String token) {

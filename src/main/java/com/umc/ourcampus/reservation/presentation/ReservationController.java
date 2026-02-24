@@ -1,14 +1,14 @@
 package com.umc.ourcampus.reservation.presentation;
 
-import com.umc.ourcampus.reservation.application.dto.request.ReservationRequest;
-import com.umc.ourcampus.reservation.application.dto.response.ReservationResponse;
-import com.umc.ourcampus.auth.domain.MemberPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.dto.response.FacilityScheduleResponse;
 import com.umc.ourcampus.reservation.application.ReservationService;
 import com.umc.ourcampus.reservation.application.dto.request.ReservationExtendRequest;
+import com.umc.ourcampus.reservation.application.dto.request.ReservationRequest;
 import com.umc.ourcampus.reservation.application.dto.request.ReservationReturnRequest;
 import com.umc.ourcampus.reservation.application.dto.response.ReservationCreateResponse;
 import com.umc.ourcampus.reservation.application.dto.response.ReservationInfo;
+import com.umc.ourcampus.reservation.application.dto.response.ReservationResponse;
 import com.umc.ourcampus.reservation.domain.AlarmTiming;
 import com.umc.ourcampus.reservation.presentation.dto.AlertOptionsResponse;
 import jakarta.validation.Valid;
@@ -36,9 +36,9 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity<ReservationCreateResponse> reserve(
             @RequestBody @Valid ReservationRequest request,
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal
+            @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        ReservationCreateResponse response = reservationService.createReservation(request, memberPrincipal.memberId());
+        ReservationCreateResponse response = reservationService.createReservation(request, userPrincipal.memberId());
         return ResponseEntity.created(URI.create("/reservations/" + response.id()))
                 .body(response);
     }
@@ -46,9 +46,9 @@ public class ReservationController {
     @GetMapping("/reservations/{reservationId}")
     public ReservationResponse getReservation(
             @PathVariable("reservationId") Long reservationId,
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal
+            @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        return reservationService.findReservationById(reservationId, memberPrincipal.memberId());
+        return reservationService.findReservationById(reservationId, userPrincipal.memberId());
     }
 
     @GetMapping("/facilities/{facilityId}/reservation-info")
@@ -76,24 +76,24 @@ public class ReservationController {
 
     @GetMapping("/me/reservations")
     public List<ReservationResponse> getMyReservations(
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(name = "onlyPendingReview", required = false) boolean onlyPendingReview
     ) {
-        return reservationService.findReservationsByMember(memberPrincipal.memberId(), onlyPendingReview);
+        return reservationService.findReservationsByMember(userPrincipal.memberId(), onlyPendingReview);
     }
 
     @GetMapping("/me/reservations/in-use")
-    public ReservationResponse getInUseReservation(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        return reservationService.findInUseReservation(memberPrincipal.memberId());
+    public ReservationResponse getInUseReservation(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return reservationService.findInUseReservation(userPrincipal.memberId());
     }
 
     @PatchMapping("/reservations/{reservationId}/extend")
     public ResponseEntity<Void> extendReservation(
             @PathVariable("reservationId") long reservationId,
             @RequestBody @Valid ReservationExtendRequest request,
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal
+            @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        reservationService.extendReservation(reservationId, request, memberPrincipal.memberId());
+        reservationService.extendReservation(reservationId, request, userPrincipal.memberId());
         return ResponseEntity.noContent().build();
     }
 
@@ -101,8 +101,8 @@ public class ReservationController {
     public ReservationResponse returnReservation(
             @PathVariable("reservationId") long reservationId,
             @RequestBody @Valid ReservationReturnRequest request,
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal
+            @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        return reservationService.returnReservation(reservationId, request, memberPrincipal.memberId());
+        return reservationService.returnReservation(reservationId, request, userPrincipal.memberId());
     }
 }

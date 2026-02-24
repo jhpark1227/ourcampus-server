@@ -65,9 +65,10 @@ public enum ErrorStatus {
     WRONG_VERIFICATION_TOKEN(HttpStatus.UNAUTHORIZED, "회원가입할 수 없습니다."),
     MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 회원입니다."),
     LIVE_SEAT_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "실시간 현황을 제공하지 않는 학교입니다."),
-
+    DUPLICATED_FACILITY_THEME(HttpStatus.CONFLICT, "테마에 이미 시설이 존재합니다."),
     // 어드민 관련 에러
     ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "관리자가 존재하지 않습니다."),
+    INVALID_ROLE_VALUE(HttpStatus.FORBIDDEN, "잘못된 역할입니다."),
     ADMIN_NOT_APPROVED(HttpStatus.FORBIDDEN, "승인되지 않은 관리자 계정입니다."),
     ADMIN_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다.");
 

@@ -1,6 +1,6 @@
 package com.umc.ourcampus.facility.application;
 
-import com.umc.ourcampus.auth.domain.AdminPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.dto.request.BuildingCreateRequest;
 import com.umc.ourcampus.facility.application.dto.response.BuildingResponse;
 import com.umc.ourcampus.facility.domain.Building;
@@ -41,7 +41,7 @@ public class BuildingService {
         return BuildingResponse.from(building);
     }
 
-    public void createBuilding(AdminPrincipal principal, long universityId, BuildingCreateRequest request) {
+    public void createBuilding(UserPrincipal principal, long universityId, BuildingCreateRequest request) {
         if (principal.universityId() != universityId) {
             throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
         }
