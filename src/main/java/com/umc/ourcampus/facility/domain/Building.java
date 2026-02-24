@@ -13,7 +13,6 @@ import jakarta.persistence.ManyToOne;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -22,7 +21,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @SQLDelete(sql = "UPDATE building SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 public class Building extends BaseEntity {
@@ -50,4 +48,18 @@ public class Building extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university_id")
     private University university;
+
+    public static Building create(String name, double latitude, double longitude, String label, String thumbnailImage, List<String> images,
+                                  List<OperationTime> operationTimes, University university) {
+        Building building = new Building();
+        building.name = name;
+        building.latitude = latitude;
+        building.longitude = longitude;
+        building.label = label;
+        building.thumbnailImage = thumbnailImage;
+        building.images = images;
+        building.operationTimes = operationTimes;
+        building.university = university;
+        return building;
+    }
 }

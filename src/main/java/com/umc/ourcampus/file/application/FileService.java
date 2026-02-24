@@ -3,8 +3,8 @@ package com.umc.ourcampus.file.application;
 import com.umc.ourcampus.file.application.dto.request.FileUploadRequest;
 import com.umc.ourcampus.file.application.dto.response.FileUploadResponse;
 import com.umc.ourcampus.file.application.dto.response.ImageUploadResponse;
-import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,12 @@ public class FileService {
     public ImageUploadResponse uploadReviewImage(FileUploadRequest file) {
         validateImageType(file);
         FileUploadResponse fileUploadResponse = fileManager.uploadFile(file, "review-images");
+        return new ImageUploadResponse(fileUploadResponse.url());
+    }
+
+    public ImageUploadResponse uploadBuildingImage(FileUploadRequest file) {
+        validateImageType(file);
+        FileUploadResponse fileUploadResponse = fileManager.uploadFile(file, "building-images");
         return new ImageUploadResponse(fileUploadResponse.url());
     }
 

@@ -1,9 +1,11 @@
 package com.umc.ourcampus.facility.application;
 
-import com.umc.ourcampus.global.exception.ApplicationException;
+import com.umc.ourcampus.auth.domain.AdminPrincipal;
+import com.umc.ourcampus.facility.application.dto.request.ThemeCreateRequest;
 import com.umc.ourcampus.facility.application.dto.response.ThemeResponse;
 import com.umc.ourcampus.facility.domain.Theme;
 import com.umc.ourcampus.facility.domain.ThemeRepository;
+import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.university.domain.University;
 import com.umc.ourcampus.university.domain.UniversityRepository;
@@ -26,5 +28,15 @@ public class ThemeService {
         List<Theme> themes = themeRepository.findByUniversity(university);
 
         return themes.stream().map(ThemeResponse::from).toList();
+    }
+
+    public void createTheme(AdminPrincipal principal, long universityId, ThemeCreateRequest request) {
+        if (principal.universityId() != universityId) {
+            throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
+        }
+        University university = universityRepository.findById(universityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
+        Theme theme = Theme.create(request.name(), university);
+        themeRepository.save(theme);
     }
 }

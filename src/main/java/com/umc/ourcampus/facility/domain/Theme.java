@@ -1,7 +1,7 @@
 package com.umc.ourcampus.facility.domain;
 
-import com.umc.ourcampus.university.domain.University;
 import com.umc.ourcampus.global.domain.BaseEntity;
+import com.umc.ourcampus.university.domain.University;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -28,4 +28,11 @@ public class Theme extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university_id")
     private University university;
+
+    public static Theme create(String name, University university) {
+        Theme theme = new Theme();
+        theme.name = name;
+        theme.university = university;
+        return theme;
+    }
 }
