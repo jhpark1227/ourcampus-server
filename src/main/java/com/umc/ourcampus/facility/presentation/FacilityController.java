@@ -2,18 +2,19 @@ package com.umc.ourcampus.facility.presentation;
 
 import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.FacilityService;
-import com.umc.ourcampus.facility.application.dto.request.AddFacilityToThemeRequest;
-import com.umc.ourcampus.facility.application.dto.request.AssignBuildingRequest;
+import com.umc.ourcampus.facility.application.dto.request.UpdateFacilityRequest;
 import com.umc.ourcampus.facility.application.dto.response.FacilityDetailResponse;
 import com.umc.ourcampus.facility.application.dto.response.FacilityResponse;
 import com.umc.ourcampus.facility.domain.FacilityCategory;
+import com.umc.ourcampus.facility.presentation.dto.request.CreateFacilityWebRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,12 +26,14 @@ public class FacilityController {
 
     private final FacilityService facilityService;
 
-    @PostMapping("/admin/themes/{themeId}/facilities")
-    public void addFacilityToTheme(
-            @PathVariable("themeId") long themeId,
-            @RequestBody AddFacilityToThemeRequest request
+    @PostMapping("/admin/universities/{universityId}/facilities")
+    public void createFacility(
+            @PathVariable("universityId") long universityId,
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody CreateFacilityWebRequest request
     ) {
-        facilityService.addFacilityToTheme(themeId, request);
+
+        facilityService.createFacility(universityId, principal, request.toDto());
     }
 
     @GetMapping("/facilities/{facilityId}")
@@ -69,11 +72,13 @@ public class FacilityController {
         return facilityService.search(keyword, userPrincipal.universityId());
     }
 
-    @PatchMapping("/admin/facilities/{facilityId}/building")
-    public void assignBuilding(
+    @PutMapping("/admin/facilities/{facilityId}")
+    public ResponseEntity<Void> updateFacility(
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("facilityId") long facilityId,
-            @RequestBody AssignBuildingRequest request
+            @RequestBody UpdateFacilityRequest request
     ) {
-        facilityService.addFacilityToBuilding(facilityId, request);
+        facilityService.updateFacility(principal, facilityId, request);
+        return ResponseEntity.noContent().build();
     }
 }

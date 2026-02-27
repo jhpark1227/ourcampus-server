@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -72,12 +71,10 @@ public class Facility extends BaseEntity {
     @JoinColumn(name = "school_id")
     private University university;
 
-    @Builder
-    private Facility(String name, String description, String purpose, String equipment, String caution, String location,
-                     String thumbnailImage,
-                     FacilityCategory category, ReservationPolicy reservationPolicy, List<OperationTime> operationTimes,
-                     List<String> images,
-                     Building building, University university) {
+    public Facility(String name, String description, String purpose, String equipment, String caution, String location,
+                    String thumbnailImage,
+                    FacilityCategory category, ReservationPolicy reservationPolicy, List<OperationTime> operationTimes, List<String> images,
+                    Building building, University university) {
         this.name = name;
         this.description = description;
         this.purpose = purpose;
@@ -93,10 +90,24 @@ public class Facility extends BaseEntity {
         this.university = university;
     }
 
-    public void changeBuilding(Building building) {
+    public void update(String name, String description, String purpose, String equipment,
+                       String caution, String location, String thumbnailImage, FacilityCategory category,
+                       ReservationPolicy reservationPolicy,
+                       List<OperationTime> operationTimes, List<String> images, Building building
+    ) {
+        this.name = name;
+        this.description = description;
+        this.purpose = purpose;
+        this.equipment = equipment;
+        this.caution = caution;
+        this.location = location;
+        this.thumbnailImage = thumbnailImage;
+        this.category = category;
+        this.operationTimes = operationTimes;
+        this.images = images;
         this.building = building;
+        this.reservationPolicy = reservationPolicy;
     }
-
 
     public Optional<Building> getBuilding() {
         return Optional.ofNullable(building);

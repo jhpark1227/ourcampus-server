@@ -2,6 +2,7 @@ package com.umc.ourcampus.facility.application.dto.response;
 
 import com.umc.ourcampus.facility.domain.Building;
 import com.umc.ourcampus.facility.domain.Facility;
+import com.umc.ourcampus.facility.domain.FacilityCategory;
 import com.umc.ourcampus.facility.domain.OperationTime;
 import java.util.List;
 
@@ -14,6 +15,7 @@ public record FacilityDetailResponse(
         String caution,
         String location,
         String imageUrl,
+        FacilityCategory category,
         List<String> images,
         List<OperationTimeResponse> operationTime,
         BuildingResponse building,
@@ -30,6 +32,7 @@ public record FacilityDetailResponse(
                 facility.getCaution(),
                 facility.getLocation(),
                 facility.getThumbnailImage(),
+                facility.getCategory(),
                 facility.getImages(),
                 facility.getOperationTimes()
                         .stream()

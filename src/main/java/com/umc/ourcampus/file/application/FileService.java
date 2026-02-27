@@ -29,6 +29,12 @@ public class FileService {
         return new ImageUploadResponse(fileUploadResponse.url());
     }
 
+    public ImageUploadResponse uploadFacilityImage(FileUploadRequest file) {
+        validateImageType(file);
+        FileUploadResponse fileUploadResponse = fileManager.uploadFile(file, "facility-images");
+        return new ImageUploadResponse(fileUploadResponse.url());
+    }
+
     public ImageUploadResponse uploadProfileImage(FileUploadRequest file) {
         validateImageType(file);
         FileUploadResponse fileUploadResponse = fileManager.uploadFile(file, "profile-images");

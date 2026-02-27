@@ -35,7 +35,18 @@ public class FileController {
                 file.getSize(),
                 file.getInputStream()
         );
-        return fileService.uploadReviewImage(fileUploadRequest);
+        return fileService.uploadBuildingImage(fileUploadRequest);
+    }
+
+    @PostMapping("/admin/facilities/images")
+    public ImageUploadResponse uploadFacilityImage(@RequestParam MultipartFile file) throws IOException {
+        FileUploadRequest fileUploadRequest = new FileUploadRequest(
+                file.getOriginalFilename(),
+                file.getContentType(),
+                file.getSize(),
+                file.getInputStream()
+        );
+        return fileService.uploadFacilityImage(fileUploadRequest);
     }
 
     @PostMapping("/members/profile-image")

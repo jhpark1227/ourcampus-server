@@ -1,7 +1,8 @@
 package com.umc.ourcampus.facility.application;
 
-import com.umc.ourcampus.facility.application.dto.request.AddFacilityToThemeRequest;
-import com.umc.ourcampus.facility.application.dto.request.AssignBuildingRequest;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
+import com.umc.ourcampus.facility.application.dto.request.CreateFacilityRequest;
+import com.umc.ourcampus.facility.application.dto.request.UpdateFacilityRequest;
 import com.umc.ourcampus.facility.application.dto.response.FacilityDetailResponse;
 import com.umc.ourcampus.facility.application.dto.response.FacilityResponse;
 import com.umc.ourcampus.facility.domain.Building;
@@ -13,6 +14,7 @@ import com.umc.ourcampus.facility.domain.FacilityTheme;
 import com.umc.ourcampus.facility.domain.FacilityThemeRepository;
 import com.umc.ourcampus.facility.domain.Theme;
 import com.umc.ourcampus.facility.domain.ThemeRepository;
+import com.umc.ourcampus.file.application.FileManager;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.review.domain.ReviewRepository;
@@ -34,6 +36,7 @@ public class FacilityService {
     private final BuildingRepository buildingRepository;
     private final UniversityRepository universityRepository;
     private final ReviewRepository reviewRepository;
+    private final FileManager fileManager;
 
     public List<FacilityResponse> findFacilitiesByBuilding(long buildingId) {
         Building building = buildingRepository.findById(buildingId)
@@ -83,26 +86,6 @@ public class FacilityService {
                 .toList();
     }
 
-    public void addFacilityToTheme(long themeId, AddFacilityToThemeRequest request) {
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new ApplicationException(ErrorStatus.THEME_NOT_FOUND));
-        Facility facility = facilityRepository.findById(request.facilityId())
-                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
-        if (!facilityThemeRepository.findByFacilityAndTheme(facility, theme).isEmpty()) {
-            throw new ApplicationException(ErrorStatus.DUPLICATED_FACILITY_THEME);
-        }
-        FacilityTheme facilityTheme = new FacilityTheme(facility, theme);
-        facilityThemeRepository.save(facilityTheme);
-    }
-
-    public void addFacilityToBuilding(long facilityId, AssignBuildingRequest request) {
-        Building building = buildingRepository.findById(request.buildingId())
-                .orElseThrow(() -> new ApplicationException(ErrorStatus.THEME_NOT_FOUND));
-        Facility facility = facilityRepository.findById(facilityId)
-                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
-        facility.changeBuilding(building);
-    }
-
     public List<FacilityResponse> getFacilities(long universityId) {
         University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
@@ -110,5 +93,63 @@ public class FacilityService {
         return facilities.stream()
                 .map(FacilityResponse::from)
                 .toList();
+    }
+
+    public void updateFacility(UserPrincipal principal, long facilityId, UpdateFacilityRequest request) {
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
+        if (facility.getUniversity().getId() != principal.universityId()) {
+            throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
+        }
+        Building building = null;
+        if (request.buildingId() != null) {
+            building = buildingRepository.findById(request.buildingId())
+                    .orElseThrow(() -> new ApplicationException(ErrorStatus.BUILDING_NOT_FOUND));
+        }
+        validateImages(request.images());
+        validateImages(List.of(request.thumbnailImage()));
+        facility.update(request.name(), request.description(), request.purpose(), request.equipment(), request.caution(),
+                request.location(), request.thumbnailImage(), request.category(), request.toReservationPolicy(), request.toOperationTimes(),
+                request.images(), building);
+
+        facilityThemeRepository.deleteByFacility(facility);
+        List<FacilityTheme> facilityThemes = themeRepository.findAllById(request.themeIds())
+                .stream()
+                .map(theme -> new FacilityTheme(facility, theme))
+                .toList();
+        facilityThemeRepository.saveAll(facilityThemes);
+    }
+
+    public void createFacility(long universityId, UserPrincipal principal, CreateFacilityRequest request) {
+        if (principal.universityId() != universityId) {
+            throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
+        }
+        University university = universityRepository.findById(universityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
+        Building building = buildingRepository.findById(request.buildingId())
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.BUILDING_NOT_FOUND));
+        validateImages(request.images());
+        Facility facility = new Facility(
+                request.name(),
+                request.description(),
+                request.purpose(),
+                request.equipment(),
+                request.caution(),
+                request.location(),
+                request.thumbnailImage(),
+                request.category(),
+                request.toReservationPolicy(),
+                request.toOperationTimes(),
+                request.images(),
+                building,
+                university
+        );
+        facilityRepository.save(facility);
+    }
+
+    private void validateImages(List<String> images) {
+        if (images.stream().anyMatch(imageUrl -> !fileManager.exist(imageUrl))) {
+            throw new ApplicationException(ErrorStatus.IMAGE_NOT_FOUND);
+        }
     }
 }
