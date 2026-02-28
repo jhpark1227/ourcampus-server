@@ -4,7 +4,7 @@ import com.umc.ourcampus.facility.domain.MinuteOffset;
 import com.umc.ourcampus.facility.domain.OperationTime;
 import java.util.List;
 
-public record BuildingCreateRequest(
+public record UpdateBuildingRequest(
         String name,
         String label,
         double latitude,

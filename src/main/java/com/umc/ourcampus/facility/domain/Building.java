@@ -62,4 +62,15 @@ public class Building extends BaseEntity {
         building.university = university;
         return building;
     }
+
+    public void update(String name, double latitude, double longitude, String label, String thumbnailImage, List<String> images,
+                       List<OperationTime> operationTimes) {
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.label = label;
+        this.thumbnailImage = thumbnailImage;
+        this.images = images;
+        this.operationTimes = operationTimes;
+    }
 }

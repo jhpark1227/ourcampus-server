@@ -112,4 +112,8 @@ public class Facility extends BaseEntity {
     public Optional<Building> getBuilding() {
         return Optional.ofNullable(building);
     }
+
+    public void clearBuilding() {
+        this.building = null;
+    }
 }
