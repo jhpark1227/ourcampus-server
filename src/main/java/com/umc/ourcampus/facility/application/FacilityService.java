@@ -63,9 +63,13 @@ public class FacilityService {
     public FacilityDetailResponse getFacilityDetail(Long id) {
         Facility facility = facilityRepository.findById(id)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
+        List<Theme> themes = facilityThemeRepository.findByFacility(facility)
+                .stream()
+                .map(FacilityTheme::getTheme)
+                .toList();
         double averageStarRating = reviewRepository.findAverageStarRatingByFacility(facility);
 
-        return FacilityDetailResponse.of(facility, averageStarRating);
+        return FacilityDetailResponse.of(facility, averageStarRating, themes);
     }
 
     public List<FacilityResponse> findByUniversityAndCategory(Long universityId, FacilityCategory category) {

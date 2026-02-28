@@ -7,6 +7,7 @@ import com.umc.ourcampus.facility.application.dto.response.ThemeResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,5 +32,13 @@ public class ThemeController {
     @GetMapping("/universities/{universityId}/themes")
     public List<ThemeResponse> getThemes(@PathVariable("universityId") long universityId) {
         return themeService.findThemesByUniversityId(universityId);
+    }
+
+    @DeleteMapping("/admin/themes/{themeId}")
+    public void deleteTheme(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable("themeId") long themeId
+    ) {
+        themeService.deleteTheme(principal, themeId);
     }
 }
