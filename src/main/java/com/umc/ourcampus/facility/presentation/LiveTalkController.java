@@ -24,22 +24,22 @@ public class LiveTalkController {
 
     private final LiveTalkService liveTalkService;
 
-    @PostMapping("/facilities/{facilityId}/live-talk")
+    @PostMapping("/buildings/{buildingId}/live-talk")
     public ResponseEntity<Void> createLiveTalk(
-            @PathVariable("facilityId") long facilityId,
+            @PathVariable("buildingId") long buildingId,
             @RequestBody @Valid LiveTalkRequest liveTalkRequest,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        long liveTalkId = liveTalkService.createLiveTalk(userPrincipal.memberId(), facilityId, liveTalkRequest);
+        long liveTalkId = liveTalkService.createLiveTalk(userPrincipal.memberId(), buildingId, liveTalkRequest);
         return ResponseEntity.created(URI.create("/live-talk/" + liveTalkId)).build();
     }
 
-    @GetMapping("/facilities/{facilityId}/live-talk")
-    public Page<LiveTalkResponse> getFacilityLiveTalk(
-            @PathVariable("facilityId") long facilityId,
+    @GetMapping("/buildings/{buildingId}/live-talk")
+    public Page<LiveTalkResponse> getBuildingLiveTalk(
+            @PathVariable("buildingId") long buildingId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam("size") int size
     ) {
-        return liveTalkService.getFacilityLiveTalk(facilityId, PageRequest.of(page, size));
+        return liveTalkService.getBuildingLiveTalk(buildingId, PageRequest.of(page, size));
     }
 }

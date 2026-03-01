@@ -3,8 +3,8 @@ package com.umc.ourcampus.facility.application;
 import com.umc.ourcampus.member.domain.MemberRepository;
 import com.umc.ourcampus.facility.application.dto.request.LiveTalkRequest;
 import com.umc.ourcampus.facility.application.dto.response.LiveTalkResponse;
-import com.umc.ourcampus.facility.domain.Facility;
-import com.umc.ourcampus.facility.domain.FacilityRepository;
+import com.umc.ourcampus.facility.domain.Building;
+import com.umc.ourcampus.facility.domain.BuildingRepository;
 import com.umc.ourcampus.facility.domain.LiveTalk;
 import com.umc.ourcampus.facility.domain.LiveTalkRepository;
 import com.umc.ourcampus.global.exception.ErrorStatus;
@@ -22,22 +22,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class LiveTalkService {
 
     private final LiveTalkRepository liveTalkRepository;
-    private final FacilityRepository facilityRepository;
+    private final BuildingRepository buildingRepository;
     private final MemberRepository memberRepository;
 
-    public long createLiveTalk(long memberId, long facilityId, LiveTalkRequest request) {
+    public long createLiveTalk(long memberId, long buildingId, LiveTalkRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
-        Facility facility = facilityRepository.findById(facilityId)
-                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
-        LiveTalk liveTalk = LiveTalk.from(request.message(), facility, member);
+        Building building = buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.BUILDING_NOT_FOUND));
+        LiveTalk liveTalk = LiveTalk.from(request.message(), building, member);
         return liveTalkRepository.save(liveTalk).getId();
     }
 
-    public Page<LiveTalkResponse> getFacilityLiveTalk(long facilityId, Pageable pageable) {
-        Facility facility = facilityRepository.findById(facilityId)
-                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
-        return liveTalkRepository.findByFacilityOrderByCreatedAtDesc(facility, pageable)
+    public Page<LiveTalkResponse> getBuildingLiveTalk(long buildingId, Pageable pageable) {
+        Building building = buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.BUILDING_NOT_FOUND));
+        return liveTalkRepository.findByBuildingOrderByCreatedAtDesc(building, pageable)
                 .map(LiveTalkResponse::from);
     }
 }
