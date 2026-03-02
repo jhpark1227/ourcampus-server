@@ -17,6 +17,7 @@ import com.umc.ourcampus.facility.domain.ThemeRepository;
 import com.umc.ourcampus.file.application.FileManager;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.global.exception.ErrorStatus;
+import com.umc.ourcampus.reservation.domain.ReservationRepository;
 import com.umc.ourcampus.review.domain.ReviewRepository;
 import com.umc.ourcampus.university.domain.University;
 import com.umc.ourcampus.university.domain.UniversityRepository;
@@ -35,6 +36,7 @@ public class FacilityService {
     private final FacilityThemeRepository facilityThemeRepository;
     private final BuildingRepository buildingRepository;
     private final UniversityRepository universityRepository;
+    private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
     private final FileManager fileManager;
 
@@ -149,6 +151,18 @@ public class FacilityService {
                 university
         );
         facilityRepository.save(facility);
+    }
+
+    public void deleteFacility(UserPrincipal principal, long facilityId) {
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
+        if (!facility.getUniversity().equalId(principal.universityId())) {
+            throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
+        }
+        reviewRepository.deleteByReservation_Facility(facility);
+        reservationRepository.deleteByFacility(facility);
+        facilityThemeRepository.deleteByFacility(facility);
+        facilityRepository.delete(facility);
     }
 
     private void validateImages(List<String> images) {

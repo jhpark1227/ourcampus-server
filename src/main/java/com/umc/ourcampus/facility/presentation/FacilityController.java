@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -79,6 +80,15 @@ public class FacilityController {
             @RequestBody UpdateFacilityRequest request
     ) {
         facilityService.updateFacility(principal, facilityId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/admin/facilities/{facilityId}")
+    public ResponseEntity<Void> deleteFacility(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable("facilityId") long facilityId
+    ) {
+        facilityService.deleteFacility(principal, facilityId);
         return ResponseEntity.noContent().build();
     }
 }

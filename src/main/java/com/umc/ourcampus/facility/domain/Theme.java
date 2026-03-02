@@ -35,4 +35,8 @@ public class Theme extends BaseEntity {
         theme.university = university;
         return theme;
     }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
 }

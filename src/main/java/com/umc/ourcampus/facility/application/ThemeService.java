@@ -2,6 +2,7 @@ package com.umc.ourcampus.facility.application;
 
 import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.dto.request.ThemeCreateRequest;
+import com.umc.ourcampus.facility.application.dto.request.UpdateThemeNameRequest;
 import com.umc.ourcampus.facility.application.dto.response.ThemeResponse;
 import com.umc.ourcampus.facility.domain.FacilityThemeRepository;
 import com.umc.ourcampus.facility.domain.Theme;
@@ -50,5 +51,14 @@ public class ThemeService {
         }
         facilityThemeRepository.deleteByTheme(theme);
         themeRepository.delete(theme);
+    }
+
+    public void updateThemeName(UserPrincipal principal, long themeId, UpdateThemeNameRequest request) {
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.THEME_NOT_FOUND));
+        if (!theme.getUniversity().equalId(principal.universityId())) {
+            throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
+        }
+        theme.changeName(request.name());
     }
 }
