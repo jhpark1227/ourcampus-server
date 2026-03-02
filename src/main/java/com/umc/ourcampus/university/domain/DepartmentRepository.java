@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
     List<Department> findByUniversity(University university);
+
+    boolean existsByUniversityAndName(University university, String name);
 }

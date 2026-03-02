@@ -50,8 +50,10 @@ public enum ErrorStatus {
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "테마가 존재하지 않습니다."),
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약이 존재하지 않습니다."),
     IMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "이미지가 존재하지 않습니다."),
+    DUPLICATED_DEPARTMENT(HttpStatus.CONFLICT, "이미 전공(학과)가 존재합니다."),
     DEPARTMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "전공(학과)가 존재하지 않습니다."),
     HEAD_COUNT_INVALID_RANGE(HttpStatus.BAD_REQUEST, "잘못된 예약 인원입니다."),
+    MEMBER_EXIST(HttpStatus.BAD_REQUEST, "학생이 존재합니다."),
 
     REFRESHTOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 RefreshToken이 존재하지 않습니다."),
     SEARCH_CONDITION_ERROR(HttpStatus.BAD_REQUEST, "잘못된 검색어입니다."),
