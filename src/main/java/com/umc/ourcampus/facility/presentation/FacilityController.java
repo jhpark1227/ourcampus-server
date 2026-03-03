@@ -42,17 +42,12 @@ public class FacilityController {
         return facilityService.getFacilityDetail(id);
     }
 
-    @GetMapping("/facilities")
-    public List<FacilityResponse> getFacilities(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestParam("category") FacilityCategory category
-    ) {
-        return facilityService.findByUniversityAndCategory(userPrincipal.universityId(), category);
-    }
-
     @GetMapping("/universities/{universityId}/facilities")
-    public List<FacilityResponse> getFacilities(@PathVariable("universityId") long universityId) {
-        return facilityService.getFacilities(universityId);
+    public List<FacilityResponse> getFacilities(
+            @PathVariable("universityId") long universityId,
+            @RequestParam(value = "category", required = false) FacilityCategory category
+    ) {
+        return facilityService.getFacilities(universityId, category);
     }
 
     @GetMapping("/buildings/{buildingId}/facilities")
@@ -65,12 +60,12 @@ public class FacilityController {
         return facilityService.findFacilitiesByTheme(themeId);
     }
 
-    @GetMapping("/facilities/search")
+    @GetMapping("/universities/{universityId}/facilities/search")
     public List<FacilityResponse> search(
-            @RequestParam("keyword") String keyword,
-            @AuthenticationPrincipal UserPrincipal userPrincipal
+            @PathVariable("universityId") long universityId,
+            @RequestParam("keyword") String keyword
     ) {
-        return facilityService.search(keyword, userPrincipal.universityId());
+        return facilityService.search(keyword, universityId);
     }
 
     @PutMapping("/admin/facilities/{facilityId}")

@@ -74,7 +74,7 @@ public class FacilityService {
         return FacilityDetailResponse.of(facility, averageStarRating, themes);
     }
 
-    public List<FacilityResponse> findByUniversityAndCategory(Long universityId, FacilityCategory category) {
+    public List<FacilityResponse> getFacilities(Long universityId, FacilityCategory category) {
         University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
         List<Facility> facilities = facilityRepository.findByUniversityAndCategory(university, category);
@@ -88,15 +88,6 @@ public class FacilityService {
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
         return facilityRepository.findByNameLikeAndUniversity(keyword, university)
                 .stream()
-                .map(FacilityResponse::from)
-                .toList();
-    }
-
-    public List<FacilityResponse> getFacilities(long universityId) {
-        University university = universityRepository.findById(universityId)
-                .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
-        List<Facility> facilities = facilityRepository.findByUniversity(university);
-        return facilities.stream()
                 .map(FacilityResponse::from)
                 .toList();
     }
