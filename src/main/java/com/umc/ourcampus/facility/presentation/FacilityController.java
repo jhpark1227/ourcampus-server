@@ -2,11 +2,11 @@ package com.umc.ourcampus.facility.presentation;
 
 import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.FacilityService;
-import com.umc.ourcampus.facility.application.dto.request.UpdateFacilityRequest;
 import com.umc.ourcampus.facility.application.dto.response.FacilityDetailResponse;
 import com.umc.ourcampus.facility.application.dto.response.FacilityResponse;
 import com.umc.ourcampus.facility.domain.FacilityCategory;
 import com.umc.ourcampus.facility.presentation.dto.request.CreateFacilityWebRequest;
+import com.umc.ourcampus.facility.presentation.dto.request.UpdateFacilityWebRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -72,9 +72,9 @@ public class FacilityController {
     public ResponseEntity<Void> updateFacility(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("facilityId") long facilityId,
-            @RequestBody UpdateFacilityRequest request
+            @RequestBody UpdateFacilityWebRequest request
     ) {
-        facilityService.updateFacility(principal, facilityId, request);
+        facilityService.updateFacility(principal, facilityId, request.toDto());
         return ResponseEntity.noContent().build();
     }
 
