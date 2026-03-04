@@ -13,8 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -22,9 +20,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @SQLDelete(sql = "UPDATE notice SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 public class Notice extends BaseEntity {
@@ -44,4 +40,17 @@ public class Notice extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "university_id")
     private University university;
+
+    public Notice(String title, String content, NoticeType type, University university) {
+        this.title = title;
+        this.content = content;
+        this.type = type;
+        this.university = university;
+    }
+
+    public void update(String title, String content, NoticeType type) {
+        this.title = title;
+        this.content = content;
+        this.type = type;
+    }
 }

@@ -1,7 +1,7 @@
 package com.umc.ourcampus.member.domain;
 
 import com.umc.ourcampus.global.exception.ApplicationException;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

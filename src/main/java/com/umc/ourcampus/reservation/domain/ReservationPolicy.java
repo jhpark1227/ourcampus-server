@@ -1,7 +1,7 @@
 package com.umc.ourcampus.reservation.domain;
 
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import java.time.Duration;
@@ -11,18 +11,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReservationPolicy {
-    boolean reservable;
+
+    private boolean reservable;
+
     @ElementCollection
-    List<AvailableTime> availableTimes;
+    private List<AvailableTime> availableTimes;
 
     private static final Duration RESERVATION_TIME_UNIT = Duration.ofMinutes(60);
     private static final Duration RESERVATION_DURATION_LIMIT = RESERVATION_TIME_UNIT.multipliedBy(3);

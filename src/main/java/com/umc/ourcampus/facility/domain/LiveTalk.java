@@ -28,15 +28,15 @@ public class LiveTalk extends BaseEntity {
     private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Facility facility;
+    private Building building;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    public static LiveTalk from(String message, Facility facility, Member member) {
+    public static LiveTalk from(String message, Building building, Member member) {
         LiveTalk liveTalk = new LiveTalk();
         liveTalk.message = message;
-        liveTalk.facility = facility;
+        liveTalk.building = building;
         liveTalk.member = member;
         return liveTalk;
     }

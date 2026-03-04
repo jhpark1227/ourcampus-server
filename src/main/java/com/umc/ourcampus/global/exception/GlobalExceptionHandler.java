@@ -1,6 +1,5 @@
 package com.umc.ourcampus.global.exception;
 
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         log.warn(exception.getMessage(), exception);
-        return ResponseEntity.badRequest().body(ErrorResponse.from(exception.getMessage()));
+        return ResponseEntity.badRequest().body(ErrorResponse.from("ARGUMENT_NOT_VALID", exception.getMessage()));
     }
 
     @ExceptionHandler(ApplicationException.class)

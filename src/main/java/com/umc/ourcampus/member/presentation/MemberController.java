@@ -1,6 +1,6 @@
 package com.umc.ourcampus.member.presentation;
 
-import com.umc.ourcampus.auth.domain.MemberPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.member.application.MemberService;
 import com.umc.ourcampus.member.application.dto.request.EmailFindRequest;
 import com.umc.ourcampus.member.application.dto.request.PasswordChangeRequest;
@@ -33,10 +33,10 @@ public class MemberController {
 
     @PostMapping("/members/withdraw")
     public ResponseEntity<Void> withdraw(
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody WithDrawRequest request
     ) {
-        memberService.withdraw(request, memberPrincipal.memberId());
+        memberService.withdraw(request, userPrincipal.memberId());
         return ResponseEntity.noContent().build();
     }
 
@@ -47,7 +47,7 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<MemberInfoResponse> getMyInfo(@AuthenticationPrincipal MemberPrincipal principal) {
+    public ResponseEntity<MemberInfoResponse> getMyInfo(@AuthenticationPrincipal UserPrincipal principal) {
         MemberInfoResponse response = memberService.getUserInfo(principal.memberId());
         return ResponseEntity.ok(response);
     }
@@ -59,19 +59,19 @@ public class MemberController {
 
     @PutMapping("/members/password")
     public ResponseEntity<Void> changePassword(
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody PasswordChangeRequest request
     ) {
-        memberService.changePassword(request, memberPrincipal.memberId());
+        memberService.changePassword(request, userPrincipal.memberId());
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/members/profile-image")
     public ResponseEntity<Void> changeProfileImage(
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody ProfileImageChangeRequest request
     ) {
-        memberService.changeProfileImage(request, memberPrincipal.memberId());
+        memberService.changeProfileImage(request, userPrincipal.memberId());
         return ResponseEntity.noContent().build();
     }
 }

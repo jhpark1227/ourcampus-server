@@ -1,7 +1,7 @@
 package com.umc.ourcampus.file.presentation;
 
-import com.umc.ourcampus.file.application.dto.request.FileUploadRequest;
 import com.umc.ourcampus.file.application.FileService;
+import com.umc.ourcampus.file.application.dto.request.FileUploadRequest;
 import com.umc.ourcampus.file.application.dto.response.ImageUploadResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,28 @@ public class FileController {
                 file.getInputStream()
         );
         return fileService.uploadReviewImage(fileUploadRequest);
+    }
+
+    @PostMapping("/admin/buildings/images")
+    public ImageUploadResponse uploadBuildingImage(@RequestParam MultipartFile file) throws IOException {
+        FileUploadRequest fileUploadRequest = new FileUploadRequest(
+                file.getOriginalFilename(),
+                file.getContentType(),
+                file.getSize(),
+                file.getInputStream()
+        );
+        return fileService.uploadBuildingImage(fileUploadRequest);
+    }
+
+    @PostMapping("/admin/facilities/images")
+    public ImageUploadResponse uploadFacilityImage(@RequestParam MultipartFile file) throws IOException {
+        FileUploadRequest fileUploadRequest = new FileUploadRequest(
+                file.getOriginalFilename(),
+                file.getContentType(),
+                file.getSize(),
+                file.getInputStream()
+        );
+        return fileService.uploadFacilityImage(fileUploadRequest);
     }
 
     @PostMapping("/members/profile-image")

@@ -1,6 +1,6 @@
 package com.umc.ourcampus.member.presentation;
 
-import com.umc.ourcampus.auth.domain.MemberPrincipal;
+import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.member.application.InquiryService;
 import com.umc.ourcampus.member.application.dto.request.InquireRequest;
 import com.umc.ourcampus.member.application.dto.response.InquiryResponse;
@@ -24,15 +24,15 @@ public class InquiryController {
     @PostMapping("/inquiries")
     public ResponseEntity<Void> inquire(
             @RequestBody @Valid InquireRequest request,
-            @AuthenticationPrincipal MemberPrincipal memberPrincipal
+            @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        long inquiryId = inquiryService.inquire(request, memberPrincipal.memberId());
+        long inquiryId = inquiryService.inquire(request, userPrincipal.memberId());
         return ResponseEntity.created(URI.create("/inquiries/" + inquiryId))
                 .build();
     }
 
     @GetMapping("/me/inquiries")
-    public List<InquiryResponse> getMyInquiries(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
-        return inquiryService.getMyInquiries(memberPrincipal.memberId());
+    public List<InquiryResponse> getMyInquiries(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return inquiryService.getMyInquiries(userPrincipal.memberId());
     }
 }

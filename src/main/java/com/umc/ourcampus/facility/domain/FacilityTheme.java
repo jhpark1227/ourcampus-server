@@ -7,14 +7,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.Getter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@SQLDelete(sql = "UPDATE facility_theme SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FacilityTheme {
 
     @Id
@@ -28,4 +27,9 @@ public class FacilityTheme {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")
     private Theme theme;
+
+    public FacilityTheme(Facility facility, Theme theme) {
+        this.facility = facility;
+        this.theme = theme;
+    }
 }

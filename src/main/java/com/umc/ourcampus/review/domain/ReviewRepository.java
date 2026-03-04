@@ -12,6 +12,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRep
 
     List<Review> findByReservation_MemberOrderByCreatedAt(Member member);
 
+    void deleteByReservation_Facility(Facility facility);
+
     Page<Review> findByReservation_FacilityOrderByCreatedAtDesc(Facility facility, Pageable page);
 
     @Query("""

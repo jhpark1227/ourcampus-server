@@ -1,18 +1,22 @@
 package com.umc.ourcampus.global.exception;
 
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
 import java.time.LocalDateTime;
 
 public record ErrorResponse(
+        String code,
         String message,
         LocalDateTime timestamp
 ) {
 
     public static ErrorResponse from(ErrorStatus errorStatus) {
-        return new ErrorResponse(errorStatus.getMessage(), LocalDateTime.now());
+        return new ErrorResponse(errorStatus.name(), errorStatus.getMessage(), LocalDateTime.now());
+    }
+
+    public static ErrorResponse from(String code, String message) {
+        return new ErrorResponse(code, message, LocalDateTime.now());
     }
 
     public static ErrorResponse from(String message) {
-        return new ErrorResponse(message, LocalDateTime.now());
+        return new ErrorResponse("ERROR", message, LocalDateTime.now());
     }
 }

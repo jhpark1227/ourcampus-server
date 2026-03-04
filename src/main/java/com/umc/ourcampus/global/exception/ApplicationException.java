@@ -1,6 +1,5 @@
 package com.umc.ourcampus.global.exception;
 
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
 import lombok.Getter;
 
 @Getter

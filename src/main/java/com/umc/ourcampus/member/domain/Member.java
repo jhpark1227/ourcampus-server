@@ -1,7 +1,7 @@
 package com.umc.ourcampus.member.domain;
 
 import com.umc.ourcampus.university.domain.Department;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.domain.BaseEntity;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.university.domain.University;

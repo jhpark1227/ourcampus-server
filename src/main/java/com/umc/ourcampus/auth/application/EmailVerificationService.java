@@ -9,7 +9,7 @@ import com.umc.ourcampus.auth.domain.EmailVerification;
 import com.umc.ourcampus.auth.domain.EmailVerificationRepository;
 import com.umc.ourcampus.auth.domain.VerificationTokenIssuer;
 import com.umc.ourcampus.auth.domain.VerificationType;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.member.domain.Email;
 import com.umc.ourcampus.member.domain.MemberRepository;

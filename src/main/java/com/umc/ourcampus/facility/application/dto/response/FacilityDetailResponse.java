@@ -2,7 +2,9 @@ package com.umc.ourcampus.facility.application.dto.response;
 
 import com.umc.ourcampus.facility.domain.Building;
 import com.umc.ourcampus.facility.domain.Facility;
+import com.umc.ourcampus.facility.domain.FacilityCategory;
 import com.umc.ourcampus.facility.domain.OperationTime;
+import com.umc.ourcampus.facility.domain.Theme;
 import java.util.List;
 
 public record FacilityDetailResponse(
@@ -14,13 +16,15 @@ public record FacilityDetailResponse(
         String caution,
         String location,
         String imageUrl,
+        FacilityCategory category,
         List<String> images,
         List<OperationTimeResponse> operationTime,
         BuildingResponse building,
         boolean reservable,
-        double averageStarRating
+        double averageStarRating,
+        List<ThemeResponse> themes
 ) {
-    public static FacilityDetailResponse of(Facility facility, double averageStarRating) {
+    public static FacilityDetailResponse of(Facility facility, double averageStarRating, List<Theme> themes) {
         return new FacilityDetailResponse(
                 facility.getId(),
                 facility.getName(),
@@ -30,6 +34,7 @@ public record FacilityDetailResponse(
                 facility.getCaution(),
                 facility.getLocation(),
                 facility.getThumbnailImage(),
+                facility.getCategory(),
                 facility.getImages(),
                 facility.getOperationTimes()
                         .stream()
@@ -37,7 +42,10 @@ public record FacilityDetailResponse(
                         .toList(),
                 facility.getBuilding().isPresent() ? BuildingResponse.from(facility.getBuilding().get()) : null,
                 facility.getReservationPolicy().isReservable(),
-                averageStarRating
+                averageStarRating,
+                themes.stream()
+                        .map(t -> new ThemeResponse(t.getId(), t.getName()))
+                        .toList()
         );
     }
 
@@ -72,5 +80,11 @@ public record FacilityDetailResponse(
                     building.getThumbnailImage()
             );
         }
+    }
+
+    private record ThemeResponse(
+            long id,
+            String name
+    ) {
     }
 }

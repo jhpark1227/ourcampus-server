@@ -29,4 +29,8 @@ public class Department extends BaseEntity {
         this.name = name;
         this.university = university;
     }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
 }

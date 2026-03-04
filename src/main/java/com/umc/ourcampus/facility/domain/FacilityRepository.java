@@ -16,6 +16,4 @@ public interface FacilityRepository extends JpaRepository<Facility, Long>, Facil
     List<Facility> findByNameLikeAndUniversity(String keyword, University university);
 
     List<Facility> findByBuilding(Building building);
-
-    List<Facility> findByUniversityAndCategory(University university, FacilityCategory category);
 }

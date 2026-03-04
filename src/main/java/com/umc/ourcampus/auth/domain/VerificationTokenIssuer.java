@@ -2,7 +2,7 @@ package com.umc.ourcampus.auth.domain;
 
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.auth.infrastructure.JwtProvider;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.member.domain.Email;
 import java.time.Duration;
 import java.util.Map;

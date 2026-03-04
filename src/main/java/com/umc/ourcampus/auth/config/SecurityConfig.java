@@ -1,6 +1,7 @@
 package com.umc.ourcampus.auth.config;
 
 import com.umc.ourcampus.auth.domain.LoginTokenIssuer;
+import com.umc.ourcampus.auth.presentation.JwtAuthenticationEntryPoint;
 import com.umc.ourcampus.auth.presentation.JwtAuthenticationFilter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final LoginTokenIssuer loginTokenIssuer;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -31,6 +33,9 @@ public class SecurityConfig {
                             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/admin/auth/login").permitAll()
+                        .requestMatchers("/admin/register").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/auth/logout").authenticated()
                         .requestMatchers("/members/register/**").permitAll()
                         .requestMatchers("/members/find-email").permitAll()
@@ -41,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/me/**").authenticated()
                         .anyRequest().permitAll()
                 )
+                .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

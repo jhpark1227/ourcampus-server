@@ -1,6 +1,6 @@
 package com.umc.ourcampus.review.domain;
 
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

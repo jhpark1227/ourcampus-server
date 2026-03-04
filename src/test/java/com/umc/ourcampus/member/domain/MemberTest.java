@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.umc.ourcampus.university.domain.University;
 import com.umc.ourcampus.fixture.UniversityFixture;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.reservation.infrastructure.PasswordEncoderStub;
 import com.umc.ourcampus.university.domain.Department;

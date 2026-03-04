@@ -5,4 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FacilityThemeRepository extends JpaRepository<FacilityTheme, Long> {
     List<FacilityTheme> findByTheme(Theme theme);
+
+    void deleteByFacility(Facility facility);
+
+    void deleteByTheme(Theme theme);
+
+    List<FacilityTheme> findByFacility(Facility facility);
 }

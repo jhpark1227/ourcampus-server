@@ -31,4 +31,8 @@ public class University extends BaseEntity {
     public University(String name) {
         this.name = name;
     }
+
+    public boolean equalId(long id) {
+        return this.id.equals(id);
+    }
 }

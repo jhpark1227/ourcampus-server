@@ -41,4 +41,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Optional<Reservation> findInUseReservationByMember(Member member);
 
     void deleteByMember(Member member);
+
+    void deleteByFacility(Facility facility);
 }

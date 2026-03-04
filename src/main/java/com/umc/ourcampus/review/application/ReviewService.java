@@ -4,7 +4,7 @@ import com.umc.ourcampus.reservation.domain.Reservation;
 import com.umc.ourcampus.facility.domain.Facility;
 import com.umc.ourcampus.facility.domain.FacilityRepository;
 import com.umc.ourcampus.file.application.FileManager;
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.member.domain.Member;
 import com.umc.ourcampus.member.domain.MemberRepository;

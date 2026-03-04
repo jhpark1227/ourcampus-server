@@ -3,7 +3,7 @@ package com.umc.ourcampus.auth.domain;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.umc.ourcampus.global.apiPayload.status.ErrorStatus;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.member.domain.Email;
 import java.lang.reflect.Field;
