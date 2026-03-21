@@ -4,10 +4,8 @@ import static com.umc.ourcampus.facility.domain.QFacility.facility;
 import static com.umc.ourcampus.review.domain.QHashTag.hashTag;
 import static com.umc.ourcampus.review.domain.QReview.review;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.umc.ourcampus.facility.domain.Facility;
-import com.umc.ourcampus.facility.domain.FacilityAndHashTag;
 import com.umc.ourcampus.facility.domain.FacilityCategory;
 import com.umc.ourcampus.facility.domain.FacilityRepositoryCustom;
 import com.umc.ourcampus.review.domain.HashTag;
@@ -23,13 +21,15 @@ public class FacilityRepositoryImpl implements FacilityRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<FacilityAndHashTag> findFacilityAndHashTagIdByHashTags(List<HashTag> hashTags) {
-        return queryFactory.from(review)
-                .join(review.reservation.facility)
+    public List<Facility> findTopFacilitiesByHashTag(HashTag targetHashTag, int limit) {
+        return queryFactory.select(facility)
+                .from(review)
+                .join(review.reservation.facility, facility)
                 .join(review.hashTags, hashTag)
-                .where(hashTag.in(hashTags))
-                .select(Projections.constructor(FacilityAndHashTag.class, facility, hashTag))
-                .distinct()
+                .where(hashTag.eq(targetHashTag))
+                .groupBy(facility.id)
+                .orderBy(review.count().desc())
+                .limit(limit)
                 .fetch();
     }
 

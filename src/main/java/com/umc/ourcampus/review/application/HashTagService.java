@@ -1,15 +1,12 @@
 package com.umc.ourcampus.review.application;
 
-import com.umc.ourcampus.facility.domain.FacilityAndHashTag;
-import com.umc.ourcampus.facility.domain.Facility;
 import com.umc.ourcampus.facility.domain.FacilityRepository;
 import com.umc.ourcampus.review.application.dto.response.HashTagResponse;
 import com.umc.ourcampus.review.application.dto.response.HashTagWithFacilitiesResponse;
 import com.umc.ourcampus.review.domain.HashTag;
 import com.umc.ourcampus.review.domain.HashTagRepository;
+import java.time.Instant;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,17 +25,12 @@ public class HashTagService {
     }
 
     public List<HashTagWithFacilitiesResponse> getTopHashTags(int size) {
-        List<HashTag> hashTags = hashTagRepository.findTopHashTags(size);
-        List<FacilityAndHashTag> facilityAndHashTag = facilityRepository.findFacilityAndHashTagIdByHashTags(hashTags);
-        Map<HashTag, List<Facility>> facilitiesByHashTag = facilityAndHashTag.stream()
-                .collect(Collectors.groupingBy(
-                        FacilityAndHashTag::hashTag,
-                        Collectors.mapping(FacilityAndHashTag::facility, Collectors.toList())
-                ));
-        return hashTags.stream()
+        long seed = Instant.now().getEpochSecond() / (4 * 3600);
+        List<HashTag> selected = hashTagRepository.findRandomHashTags(size, seed);
+        return selected.stream()
                 .map(hashTag -> HashTagWithFacilitiesResponse.of(
                         hashTag,
-                        facilitiesByHashTag.getOrDefault(hashTag, List.of())
+                        facilityRepository.findTopFacilitiesByHashTag(hashTag, 5)
                 ))
                 .toList();
     }
