@@ -12,6 +12,7 @@ import com.umc.ourcampus.university.domain.UniversityRepository;
 import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +21,7 @@ public class HashTagService {
 
     private final HashTagRepository hashTagRepository;
     private final FacilityRepository facilityRepository;
+    private final UniversityRepository universityRepository;
 
     public List<HashTagResponse> findAllHashTags() {
         return hashTagRepository.findAll()
@@ -28,7 +30,7 @@ public class HashTagService {
                 .toList();
     }
 
-    public List<HashTagWithFacilitiesResponse> getTopHashTags(int size) {
+    @Cacheable(value = "popularHashTags", key = "#universityId + '_' + #size")
     public List<HashTagWithFacilitiesResponse> getTopHashTags(long universityId, int size) {
         University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
