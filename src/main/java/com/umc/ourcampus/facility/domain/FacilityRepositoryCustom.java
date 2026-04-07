@@ -7,5 +7,5 @@ import java.util.List;
 public interface FacilityRepositoryCustom {
     List<Facility> findByUniversityAndCategory(University university, FacilityCategory category);
 
-    List<Facility> findTopFacilitiesByHashTag(HashTag hashTag, int limit);
+    List<Facility> findTopFacilitiesByHashTag(HashTag hashTag, int limit, University university);
 }

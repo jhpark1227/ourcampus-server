@@ -21,12 +21,12 @@ public class FacilityRepositoryImpl implements FacilityRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Facility> findTopFacilitiesByHashTag(HashTag targetHashTag, int limit) {
+    public List<Facility> findTopFacilitiesByHashTag(HashTag targetHashTag, int limit, University university) {
         return queryFactory.select(facility)
                 .from(review)
                 .join(review.reservation.facility, facility)
                 .join(review.hashTags, hashTag)
-                .where(hashTag.eq(targetHashTag))
+                .where(hashTag.eq(targetHashTag), facility.university.eq(university))
                 .groupBy(facility.id)
                 .orderBy(review.count().desc())
                 .limit(limit)

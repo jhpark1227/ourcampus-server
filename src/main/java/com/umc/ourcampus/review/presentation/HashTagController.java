@@ -6,6 +6,7 @@ import com.umc.ourcampus.review.application.dto.response.HashTagWithFacilitiesRe
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,8 +21,10 @@ public class HashTagController {
         return hashTagService.findAllHashTags();
     }
 
-    @GetMapping("/hashtags/popular")
-    public List<HashTagWithFacilitiesResponse> getTopTags(@RequestParam(name = "size") int size) {
-        return hashTagService.getTopHashTags(size);
+    @GetMapping("/universities/{universityId}/hashtags/popular")
+    public List<HashTagWithFacilitiesResponse> getTopTags(
+            @PathVariable(name = "universityId") long universityId,
+            @RequestParam(name = "size") int size) {
+        return hashTagService.getTopHashTags(universityId, size);
     }
 }
