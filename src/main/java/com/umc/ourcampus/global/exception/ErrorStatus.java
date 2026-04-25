@@ -44,6 +44,7 @@ public enum ErrorStatus {
     PERMISSION_ERROR(HttpStatus.FORBIDDEN, "권한이 없습니다."),
 
     FACILITY_NOT_FOUND(HttpStatus.NOT_FOUND, "시설이 없습니다."),
+    HASHTAG_NOT_FOUND(HttpStatus.NOT_FOUND, "해시태그가 존재하지 않습니다."),
     UNIVERSITY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 대학교입니다."),
     BUILDING_NOT_FOUND(HttpStatus.NOT_FOUND, "건물이 존재하지 않습니다."),
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "공지사항이 존재하지 않습니다."),

@@ -5,6 +5,7 @@ import com.umc.ourcampus.facility.application.dto.request.CreateFacilityRequest;
 import com.umc.ourcampus.facility.application.dto.request.UpdateFacilityRequest;
 import com.umc.ourcampus.facility.application.dto.response.FacilityDetailResponse;
 import com.umc.ourcampus.facility.application.dto.response.FacilityResponse;
+import com.umc.ourcampus.facility.application.dto.response.HashTagFacilityResponse;
 import com.umc.ourcampus.facility.domain.Building;
 import com.umc.ourcampus.facility.domain.BuildingRepository;
 import com.umc.ourcampus.facility.domain.Facility;
@@ -18,6 +19,8 @@ import com.umc.ourcampus.file.application.FileManager;
 import com.umc.ourcampus.global.exception.ApplicationException;
 import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.reservation.domain.ReservationRepository;
+import com.umc.ourcampus.review.domain.HashTag;
+import com.umc.ourcampus.review.domain.HashTagRepository;
 import com.umc.ourcampus.review.domain.ReviewRepository;
 import com.umc.ourcampus.university.domain.University;
 import com.umc.ourcampus.university.domain.UniversityRepository;
@@ -38,6 +41,7 @@ public class FacilityService {
     private final UniversityRepository universityRepository;
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
+    private final HashTagRepository hashTagRepository;
     private final FileManager fileManager;
 
     public List<FacilityResponse> findFacilitiesByBuilding(long buildingId) {
@@ -154,6 +158,17 @@ public class FacilityService {
         reservationRepository.deleteByFacility(facility);
         facilityThemeRepository.deleteByFacility(facility);
         facilityRepository.delete(facility);
+    }
+
+    public List<HashTagFacilityResponse> getTopFacilitiesByHashTag(long universityId, long hashTagId) {
+        University university = universityRepository.findById(universityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
+        HashTag hashTag = hashTagRepository.findById(hashTagId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.HASHTAG_NOT_FOUND));
+        return facilityRepository.findTopFacilitiesByHashTag(hashTag, 5, university)
+                .stream()
+                .map(HashTagFacilityResponse::from)
+                .toList();
     }
 
     private void validateImages(List<String> images) {
