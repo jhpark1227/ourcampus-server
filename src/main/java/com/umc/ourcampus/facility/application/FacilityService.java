@@ -13,6 +13,8 @@ import com.umc.ourcampus.facility.domain.FacilityCategory;
 import com.umc.ourcampus.facility.domain.FacilityRepository;
 import com.umc.ourcampus.facility.domain.FacilityTheme;
 import com.umc.ourcampus.facility.domain.FacilityThemeRepository;
+import com.umc.ourcampus.facility.domain.HashTagFacilityStat;
+import com.umc.ourcampus.facility.domain.HashTagFacilityStatRepository;
 import com.umc.ourcampus.facility.domain.Theme;
 import com.umc.ourcampus.facility.domain.ThemeRepository;
 import com.umc.ourcampus.file.application.FileManager;
@@ -24,6 +26,7 @@ import com.umc.ourcampus.review.domain.HashTagRepository;
 import com.umc.ourcampus.review.domain.ReviewRepository;
 import com.umc.ourcampus.university.domain.University;
 import com.umc.ourcampus.university.domain.UniversityRepository;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,7 @@ public class FacilityService {
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
     private final HashTagRepository hashTagRepository;
+    private final HashTagFacilityStatRepository hashTagFacilityStatRepository;
     private final FileManager fileManager;
 
     public List<FacilityResponse> findFacilitiesByBuilding(long buildingId) {
@@ -165,10 +169,27 @@ public class FacilityService {
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
         HashTag hashTag = hashTagRepository.findById(hashTagId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.HASHTAG_NOT_FOUND));
-        return facilityRepository.findTopFacilitiesByHashTag(hashTag, 5, university)
+        return hashTagFacilityStatRepository.findByUniversityAndHashTagOrderByRankAsc(university, hashTag)
                 .stream()
-                .map(HashTagFacilityResponse::from)
+                .map(stat -> HashTagFacilityResponse.from(stat.getFacility()))
                 .toList();
+    }
+
+    public void refreshHashTagFacilityStats() {
+        List<University> universities = universityRepository.findAll();
+        List<HashTag> hashTags = hashTagRepository.findAll();
+
+        for (University university : universities) {
+            hashTagFacilityStatRepository.deleteAllByUniversity(university);
+            List<HashTagFacilityStat> stats = new ArrayList<>();
+            for (HashTag hashTag : hashTags) {
+                List<Facility> topFacilities = facilityRepository.findTopFacilitiesByHashTag(hashTag, 5, university);
+                for (int i = 0; i < topFacilities.size(); i++) {
+                    stats.add(HashTagFacilityStat.of(university, hashTag, topFacilities.get(i), i + 1));
+                }
+            }
+            hashTagFacilityStatRepository.saveAll(stats);
+        }
     }
 
     private void validateImages(List<String> images) {
