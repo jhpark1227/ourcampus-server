@@ -1,8 +1,6 @@
 package com.umc.ourcampus.facility.infrastructure;
 
 import static com.umc.ourcampus.facility.domain.QFacility.facility;
-import static com.umc.ourcampus.review.domain.QHashTag.hashTag;
-import static com.umc.ourcampus.review.domain.QReview.review;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.umc.ourcampus.facility.domain.Facility;
@@ -10,6 +8,7 @@ import com.umc.ourcampus.facility.domain.FacilityCategory;
 import com.umc.ourcampus.facility.domain.FacilityRepositoryCustom;
 import com.umc.ourcampus.review.domain.HashTag;
 import com.umc.ourcampus.university.domain.University;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -19,18 +18,24 @@ import org.springframework.stereotype.Repository;
 public class FacilityRepositoryImpl implements FacilityRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final EntityManager entityManager;
 
     @Override
     public List<Facility> findTopFacilitiesByHashTag(HashTag targetHashTag, int limit, University university) {
-        return queryFactory.select(facility)
-                .from(review)
-                .join(review.reservation.facility, facility)
-                .join(review.hashTags, hashTag)
-                .where(hashTag.eq(targetHashTag), facility.university.eq(university))
-                .groupBy(facility.id)
-                .orderBy(review.count().desc())
-                .limit(limit)
-                .fetch();
+        String sql = """
+                SELECT f.*
+                FROM hash_tag_review hr
+                  JOIN review FORCE ON review.id = hr.review_id AND review.deleted_at IS NULL
+                  JOIN reservation ON reservation.id = review.reservation_id AND reservation.deleted_at IS NULL
+                  JOIN facility f ON f.id = reservation.facility_id AND f.deleted_at IS NULL
+                WHERE hr.hash_tag_id = :hashTagId
+                GROUP BY f.id
+                ORDER BY COUNT(*) DESC
+                LIMIT 5;
+                """;
+        return entityManager.createNativeQuery(sql, Facility.class)
+                .setParameter("hashTagId", targetHashTag.getId())
+                .getResultList();
     }
 
     @Override
