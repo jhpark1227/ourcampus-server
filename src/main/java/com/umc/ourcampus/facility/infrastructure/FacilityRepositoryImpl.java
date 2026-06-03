@@ -25,16 +25,17 @@ public class FacilityRepositoryImpl implements FacilityRepositoryCustom {
         String sql = """
                 SELECT f.*
                 FROM hash_tag_review hr
-                  JOIN review FORCE ON review.id = hr.review_id AND review.deleted_at IS NULL
+                  JOIN review ON review.id = hr.review_id AND review.deleted_at IS NULL
                   JOIN reservation ON reservation.id = review.reservation_id AND reservation.deleted_at IS NULL
                   JOIN facility f ON f.id = reservation.facility_id AND f.deleted_at IS NULL
-                WHERE hr.hash_tag_id = :hashTagId
+                WHERE hr.hash_tag_id = :hashTagId AND f.school_id = :universityId
                 GROUP BY f.id
                 ORDER BY COUNT(*) DESC
                 LIMIT 5;
                 """;
         return entityManager.createNativeQuery(sql, Facility.class)
                 .setParameter("hashTagId", targetHashTag.getId())
+                .setParameter("universityId", university.getId())
                 .getResultList();
     }
 
