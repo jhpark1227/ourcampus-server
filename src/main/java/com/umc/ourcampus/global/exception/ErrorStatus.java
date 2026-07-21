@@ -74,7 +74,8 @@ public enum ErrorStatus {
     ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "관리자가 존재하지 않습니다."),
     INVALID_ROLE_VALUE(HttpStatus.FORBIDDEN, "잘못된 역할입니다."),
     ADMIN_NOT_APPROVED(HttpStatus.FORBIDDEN, "승인되지 않은 관리자 계정입니다."),
-    ADMIN_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다.");
+    ADMIN_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다."),
+    LOCK_ACQUISITION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "락을 획득하는데 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

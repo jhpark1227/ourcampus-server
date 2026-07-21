@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -39,6 +40,7 @@ public class ReservationService {
     private final FacilityRepository facilityRepository;
     private final ReservationValidator reservationValidator;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ReservationCreateResponse createReservation(ReservationRequest request, long memberId) {
         Facility facility = facilityRepository.findById(request.facilityId())
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
@@ -127,7 +129,7 @@ public class ReservationService {
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.RESERVATION_NOT_FOUND));
-        
+
         TimeSlot extendedTimeSlot = reservation.getTimeSlot().extend(request.endTime());
         reservationValidator.validateForExtension(reservation.getFacility(), extendedTimeSlot, reservation);
         reservation.validateOwner(member);
