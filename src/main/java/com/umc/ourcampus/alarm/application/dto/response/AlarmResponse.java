@@ -12,7 +12,6 @@ public record AlarmResponse(
         String type
 ) {
     public static AlarmResponse from(Alarm alarm) {
-        System.out.println(alarm.isChecked());
         return new AlarmResponse(
                 alarm.getId(),
                 alarm.getTitle(),

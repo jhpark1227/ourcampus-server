@@ -48,8 +48,4 @@ public abstract class Alarm extends BaseEntity {
     }
 
     public abstract String getType();
-
-    public void read() {
-        checked = true;
-    }
 }
