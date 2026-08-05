@@ -158,7 +158,7 @@ public class FacilityService {
         if (!facility.getUniversity().equalId(principal.universityId())) {
             throw new ApplicationException(ErrorStatus.PERMISSION_ERROR);
         }
-        reviewRepository.deleteByReservation_Facility(facility);
+        reviewRepository.deleteByFacility(facility);
         reservationRepository.deleteByFacility(facility);
         facilityThemeRepository.deleteByFacility(facility);
         facilityRepository.delete(facility);

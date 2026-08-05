@@ -18,7 +18,7 @@ public record ReviewResponse(
         FacilityResponse facility
 ) {
     public static ReviewResponse from(Review review) {
-        Facility facility = review.getReservation().getFacility();
+        Facility facility = review.getFacility();
         Optional<Building> building = facility.getBuilding();
         BuildingResponse buildingResponse = building.map(value -> new BuildingResponse(value.getName())).orElse(null);
         FacilityResponse facilityResponse = new FacilityResponse(
@@ -32,7 +32,7 @@ public record ReviewResponse(
                 review.getStarRating().value(),
                 review.getImages(),
                 review.getCreatedAt(),
-                MemberResponse.from(review.getReservation().getMember()),
+                MemberResponse.from(review.getMember()),
                 facilityResponse
         );
     }

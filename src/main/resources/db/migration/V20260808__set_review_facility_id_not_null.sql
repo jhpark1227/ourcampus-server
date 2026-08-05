@@ -1,0 +1,1 @@
+ALTER TABLE review MODIFY COLUMN facility_id BIGINT NOT NULL;

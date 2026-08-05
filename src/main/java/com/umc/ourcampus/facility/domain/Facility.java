@@ -3,7 +3,6 @@ package com.umc.ourcampus.facility.domain;
 import com.umc.ourcampus.global.domain.BaseEntity;
 import com.umc.ourcampus.reservation.domain.ReservationPolicy;
 import com.umc.ourcampus.university.domain.University;
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,8 +11,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.util.ArrayList;
@@ -30,8 +27,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE facility SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorValue("NON_RESERVABLE")
 public class Facility extends BaseEntity {
 
     @Id
@@ -68,7 +63,7 @@ public class Facility extends BaseEntity {
     private Building building;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school_id")
+    @JoinColumn(name = "university_id")
     private University university;
 
     public Facility(String name, String description, String purpose, String equipment, String caution, String location,
