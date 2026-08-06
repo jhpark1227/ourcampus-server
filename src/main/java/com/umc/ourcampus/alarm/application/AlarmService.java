@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AlarmService {
 
     private static final int MAX_PAGE_SIZE = 50;
+    private static final int RETENTION_DAYS = 7;
 
     private final AlarmRepository alarmRepository;
     private final MemberRepository memberRepository;
@@ -65,8 +66,8 @@ public class AlarmService {
         alarmRepository.markAllAsRead(member);
     }
 
-    public int purgeAlarmsScheduledBefore(LocalDateTime threshold, int batchSize) {
-        return alarmRepository.deleteAlarmsScheduledBefore(threshold, batchSize);
+    public int purgeExpiredAlarms() {
+        return alarmRepository.deleteScheduledBefore(LocalDateTime.now().minusDays(RETENTION_DAYS));
     }
 
     private Member findMember(long memberId) {

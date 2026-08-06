@@ -1,16 +1,16 @@
 package com.umc.ourcampus.facility.application;
 
-import com.umc.ourcampus.member.domain.MemberRepository;
-import com.umc.ourcampus.facility.application.dto.request.SearchHistoryRequest;
 import com.umc.ourcampus.facility.application.dto.response.SearchKeywordResponse;
-import com.umc.ourcampus.facility.domain.SearchHistory;
+import com.umc.ourcampus.facility.domain.PopularKeywordStat;
+import com.umc.ourcampus.facility.domain.PopularKeywordStatRepository;
 import com.umc.ourcampus.facility.domain.SearchHistoryRepository;
 import com.umc.ourcampus.facility.domain.SearchKeyword;
-import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.global.exception.ApplicationException;
-import com.umc.ourcampus.member.domain.Member;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.university.domain.University;
 import com.umc.ourcampus.university.domain.UniversityRepository;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -22,37 +22,44 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SearchHistoryService {
 
-    private final MemberRepository memberRepository;
+    private static final int RETENTION_DAYS = 30;
+    private static final int POPULAR_PERIOD_DAYS = 7;
+    private static final int POPULAR_KEYWORD_SIZE = 20;
+
     private final SearchHistoryRepository searchHistoryRepository;
+    private final PopularKeywordStatRepository popularKeywordStatRepository;
     private final UniversityRepository universityRepository;
 
-    public void saveSearchHistory(SearchHistoryRequest request, long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
-        SearchKeyword searchKeyword = new SearchKeyword(request.keyword());
-        SearchHistory searchHistory = new SearchHistory(searchKeyword, member);
-        searchHistoryRepository.save(searchHistory);
-    }
-
-    public List<SearchKeywordResponse> findSearchHistoryByMemberId(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
-        return searchHistoryRepository.findKeywordByMemberOrderByLastest(member, PageRequest.of(0, 5));
-    }
-
-    public void deleteByMemberIdAndKeyword(long memberId, String keyword) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ApplicationException(ErrorStatus.MEMBER_NOT_FOUND));
-        SearchKeyword searchKeyword = new SearchKeyword(keyword);
-        searchHistoryRepository.deleteByMemberAndKeyword(member, searchKeyword);
-    }
-
+    @Transactional(readOnly = true)
     public List<SearchKeywordResponse> findPopularByUniversityId(long universityId, int size) {
         University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
-        return searchHistoryRepository.findPopularKeywordByUniversity(university, size)
+
+        return popularKeywordStatRepository
+                .findByUniversityOrderByRankAsc(university, PageRequest.of(0, size))
                 .stream()
-                .map(SearchKeywordResponse::from)
+                .map(stat -> SearchKeywordResponse.from(stat.getKeyword()))
                 .toList();
+    }
+
+    public void refreshPopularKeywordStats() {
+        LocalDateTime from = LocalDateTime.now().minusDays(POPULAR_PERIOD_DAYS);
+
+        for (University university : universityRepository.findAll()) {
+            popularKeywordStatRepository.deleteAllByUniversity(university);
+
+            List<SearchKeyword> keywords = searchHistoryRepository
+                    .findPopularKeywordByUniversity(university, from, POPULAR_KEYWORD_SIZE);
+
+            List<PopularKeywordStat> stats = new ArrayList<>();
+            for (int rank = 0; rank < keywords.size(); rank++) {
+                stats.add(PopularKeywordStat.of(university, keywords.get(rank), rank + 1));
+            }
+            popularKeywordStatRepository.saveAll(stats);
+        }
+    }
+
+    public int purgeExpiredSearchHistories() {
+        return searchHistoryRepository.deleteCreatedBefore(LocalDateTime.now().minusDays(RETENTION_DAYS));
     }
 }

@@ -22,7 +22,7 @@ public class HashTagFacilityStatScheduler {
         log.info("해시태그별 인기 시설 통계 초기화 완료");
     }
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 0 2 * * *")
     public void refresh() {
         log.info("해시태그별 인기 시설 통계 갱신 시작");
         facilityService.refreshHashTagFacilityStats();

@@ -15,6 +15,9 @@ import com.umc.ourcampus.facility.domain.FacilityTheme;
 import com.umc.ourcampus.facility.domain.FacilityThemeRepository;
 import com.umc.ourcampus.facility.domain.HashTagFacilityStat;
 import com.umc.ourcampus.facility.domain.HashTagFacilityStatRepository;
+import com.umc.ourcampus.facility.domain.SearchHistory;
+import com.umc.ourcampus.facility.domain.SearchHistoryRepository;
+import com.umc.ourcampus.facility.domain.SearchKeyword;
 import com.umc.ourcampus.facility.domain.Theme;
 import com.umc.ourcampus.facility.domain.ThemeRepository;
 import com.umc.ourcampus.file.application.FileManager;
@@ -46,6 +49,7 @@ public class FacilityService {
     private final ReviewRepository reviewRepository;
     private final HashTagRepository hashTagRepository;
     private final HashTagFacilityStatRepository hashTagFacilityStatRepository;
+    private final SearchHistoryRepository searchHistoryRepository;
     private final FileManager fileManager;
 
     public List<FacilityResponse> findFacilitiesByBuilding(long buildingId) {
@@ -94,7 +98,10 @@ public class FacilityService {
     public List<FacilityResponse> search(String keyword, long universityId) {
         University university = universityRepository.findById(universityId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
-        return facilityRepository.findByNameLikeAndUniversity(keyword, university)
+        SearchKeyword searchKeyword = new SearchKeyword(keyword);
+        searchHistoryRepository.save(new SearchHistory(searchKeyword, university));
+
+        return facilityRepository.findByNameLikeAndUniversity(searchKeyword.value(), university)
                 .stream()
                 .map(FacilityResponse::from)
                 .toList();

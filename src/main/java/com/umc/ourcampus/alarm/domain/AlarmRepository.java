@@ -31,7 +31,6 @@ public interface AlarmRepository extends JpaRepository<Alarm, Long>, AlarmReposi
     @Query(value = """
                 DELETE FROM alarm
                 WHERE scheduled_time < :threshold
-                LIMIT :batchSize
             """, nativeQuery = true)
-    int deleteAlarmsScheduledBefore(LocalDateTime threshold, int batchSize);
+    int deleteScheduledBefore(LocalDateTime threshold);
 }
