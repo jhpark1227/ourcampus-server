@@ -30,7 +30,7 @@ public record ReviewResponse(
                 review.getId(),
                 review.getContent(),
                 review.getStarRating().value(),
-                review.getImages(),
+                review.getImages().stream().toList(),
                 review.getCreatedAt(),
                 MemberResponse.from(review.getMember()),
                 facilityResponse

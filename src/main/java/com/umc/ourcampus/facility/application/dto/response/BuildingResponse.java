@@ -21,7 +21,7 @@ public record BuildingResponse(
                 building.getLongitude(),
                 building.getLabel(),
                 building.getThumbnailImage(),
-                building.getImages(),
+                building.getImages().stream().toList(),
                 building.getOperationTimes()
                         .stream()
                         .map(OperationTimeResponse::from)
