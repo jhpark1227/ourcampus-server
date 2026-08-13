@@ -4,6 +4,8 @@ import com.umc.ourcampus.alarm.application.AlarmService;
 import com.umc.ourcampus.alarm.application.dto.response.AlarmSliceResponse;
 import com.umc.ourcampus.alarm.application.dto.response.UnreadAlarmResponse;
 import com.umc.ourcampus.auth.domain.UserPrincipal;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AlarmController {
 
+    private static final int MAX_PAGE_SIZE = 50;
+
     private final AlarmService alarmService;
 
     @GetMapping("/me/alarms")
@@ -26,7 +30,7 @@ public class AlarmController {
             @RequestParam(value = "cursorScheduledTime", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorScheduledTime,
             @RequestParam(value = "cursorId", required = false) Long cursorId,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(MAX_PAGE_SIZE) int size
     ) {
         return alarmService.getMyAlarms(userPrincipal.memberId(), cursorScheduledTime, cursorId, size);
     }

@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AlarmService {
 
-    private static final int MAX_PAGE_SIZE = 50;
     private static final int RETENTION_DAYS = 7;
 
     private final AlarmRepository alarmRepository;
@@ -34,19 +33,18 @@ public class AlarmService {
             int size
     ) {
         Member member = findMember(memberId);
-        int pageSize = Math.min(size, MAX_PAGE_SIZE);
 
         List<Alarm> alarms = alarmRepository.findSentAlarms(
                 member,
                 LocalDateTime.now(),
                 cursorScheduledTime,
                 cursorId,
-                pageSize + 1
+                size + 1
         );
 
-        boolean hasNext = alarms.size() > pageSize;
+        boolean hasNext = alarms.size() > size;
         List<AlarmResponse> responses = alarms.stream()
-                .limit(pageSize)
+                .limit(size)
                 .map(AlarmResponse::from)
                 .toList();
 

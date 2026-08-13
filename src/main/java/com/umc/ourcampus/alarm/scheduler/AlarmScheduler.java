@@ -13,7 +13,7 @@ public class AlarmScheduler {
 
     private final AlarmService alarmService;
 
-    @Scheduled(cron = "0 0 4 * * *")
+    @Scheduled(cron = "0 0 5 * * *")
     public void purgeExpiredAlarms() {
         log.info("만료 알림 삭제 시작");
         int deleted = alarmService.purgeExpiredAlarms();

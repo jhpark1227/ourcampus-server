@@ -17,7 +17,7 @@ public class ReservationValidator {
 
     public void validate(Member member, Facility facility, TimeSlot timeSlot) {
         List<Reservation> reservations = reservationRepository.findByFacilityAndDate(
-                facility, 
+                facility,
                 timeSlot.startTime().toLocalDate()
         );
 
@@ -27,7 +27,7 @@ public class ReservationValidator {
 
     public void validateForExtension(Facility facility, TimeSlot extendedTimeSlot, Reservation currentReservation) {
         List<Reservation> reservations = new ArrayList<>(reservationRepository.findByFacilityAndDate(
-                facility, 
+                facility,
                 extendedTimeSlot.startTime().toLocalDate()
         ));
         reservations.remove(currentReservation);
