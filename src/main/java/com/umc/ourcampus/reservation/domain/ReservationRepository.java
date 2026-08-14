@@ -3,6 +3,7 @@ package com.umc.ourcampus.reservation.domain;
 import com.umc.ourcampus.facility.domain.Facility;
 import com.umc.ourcampus.member.domain.Member;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,13 +11,18 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
+    default List<Reservation> findByFacilityAndDate(Facility facility, LocalDate date) {
+        return findByFacilityAndPeriod(facility, date.atStartOfDay(), date.plusDays(1).atStartOfDay());
+    }
+
     @Query("""
                 SELECT r
                 FROM Reservation r
                 WHERE r.facility = :facility
-                AND CAST(r.timeSlot.startTime AS DATE) = CAST(:date AS DATE)
+                AND r.timeSlot.startTime >= :start
+                AND r.timeSlot.startTime < :end
             """)
-    List<Reservation> findByFacilityAndDate(Facility facility, LocalDate date);
+    List<Reservation> findByFacilityAndPeriod(Facility facility, LocalDateTime start, LocalDateTime end);
 
     @Query("""
                     SELECT reservation

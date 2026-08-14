@@ -5,8 +5,7 @@ import com.umc.ourcampus.university.domain.University;
 import java.util.List;
 
 public interface FacilityRepositoryCustom {
-    List<FacilityAndHashTag> findFacilityAndHashTagIdByHashTags(List<HashTag> hashTags);
-
     List<Facility> findByUniversityAndCategory(University university, FacilityCategory category);
 
+    List<Facility> findTopFacilitiesByHashTag(HashTag hashTag, int limit, University university);
 }

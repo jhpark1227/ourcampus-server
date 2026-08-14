@@ -4,6 +4,7 @@ import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.FacilityService;
 import com.umc.ourcampus.facility.application.dto.response.FacilityDetailResponse;
 import com.umc.ourcampus.facility.application.dto.response.FacilityResponse;
+import com.umc.ourcampus.facility.application.dto.response.HashTagFacilityResponse;
 import com.umc.ourcampus.facility.domain.FacilityCategory;
 import com.umc.ourcampus.facility.presentation.dto.request.CreateFacilityWebRequest;
 import com.umc.ourcampus.facility.presentation.dto.request.UpdateFacilityWebRequest;
@@ -58,6 +59,13 @@ public class FacilityController {
     @GetMapping("/themes/{themeId}/facilities")
     public List<FacilityResponse> getFacilitiesByTheme(@PathVariable("themeId") long themeId) {
         return facilityService.findFacilitiesByTheme(themeId);
+    }
+
+    @GetMapping("/universities/{universityId}/hashtags/{hashtagId}/facilities")
+    public List<HashTagFacilityResponse> getTopFacilitiesByHashTag(
+            @PathVariable("universityId") long universityId,
+            @PathVariable("hashtagId") long hashTagId) {
+        return facilityService.getTopFacilitiesByHashTag(universityId, hashTagId);
     }
 
     @GetMapping("/universities/{universityId}/facilities/search")

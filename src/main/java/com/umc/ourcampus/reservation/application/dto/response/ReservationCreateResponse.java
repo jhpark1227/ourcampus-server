@@ -60,7 +60,7 @@ public record ReservationCreateResponse(
                     facility.getCaution(),
                     facility.getLocation(),
                     facility.getThumbnailImage(),
-                    facility.getImages()
+                    facility.getImages().stream().toList()
             );
         }
     }

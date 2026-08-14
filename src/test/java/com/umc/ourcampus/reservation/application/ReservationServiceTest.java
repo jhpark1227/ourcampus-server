@@ -2,10 +2,9 @@ package com.umc.ourcampus.reservation.application;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-import com.umc.ourcampus.fixture.FacilityFixture;
-import com.umc.ourcampus.university.domain.Department;
 import com.umc.ourcampus.facility.domain.Facility;
 import com.umc.ourcampus.facility.domain.FacilityRepository;
+import com.umc.ourcampus.fixture.FacilityFixture;
 import com.umc.ourcampus.fixture.MemberFixture;
 import com.umc.ourcampus.fixture.UniversityFixture;
 import com.umc.ourcampus.global.exception.ApplicationException;
@@ -13,19 +12,20 @@ import com.umc.ourcampus.member.domain.Member;
 import com.umc.ourcampus.member.domain.MemberRepository;
 import com.umc.ourcampus.reservation.application.dto.request.ReservationRequest;
 import com.umc.ourcampus.reservation.domain.ReservationPolicy;
+import com.umc.ourcampus.support.DatabaseCleaner;
+import com.umc.ourcampus.university.domain.Department;
 import com.umc.ourcampus.university.domain.DepartmentRepository;
 import com.umc.ourcampus.university.domain.University;
 import com.umc.ourcampus.university.domain.UniversityRepository;
 import java.time.LocalDateTime;
 import java.util.Set;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Transactional
 class ReservationServiceTest {
 
     @Autowired
@@ -42,6 +42,14 @@ class ReservationServiceTest {
 
     @Autowired
     DepartmentRepository departmentRepository;
+
+    @Autowired
+    DatabaseCleaner databaseCleaner;
+
+    @AfterEach
+    void tearDown() {
+        databaseCleaner.clean();
+    }
 
     @Test
     void 예약을_생성한다() {

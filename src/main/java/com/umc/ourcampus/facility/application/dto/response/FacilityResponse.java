@@ -29,7 +29,7 @@ public record FacilityResponse(
                 facility.getCaution(),
                 facility.getLocation(),
                 facility.getThumbnailImage(),
-                facility.getImages(),
+                facility.getImages().stream().toList(),
                 facility.getOperationTimes()
                         .stream()
                         .map(OperationTimeResponse::from)

@@ -10,16 +10,16 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRepositoryCustom {
 
-    List<Review> findByReservation_MemberOrderByCreatedAt(Member member);
+    List<Review> findByMemberOrderByCreatedAt(Member member);
 
-    void deleteByReservation_Facility(Facility facility);
+    void deleteByFacility(Facility facility);
 
-    Page<Review> findByReservation_FacilityOrderByCreatedAtDesc(Facility facility, Pageable page);
+    Page<Review> findByFacilityOrderByCreatedAtDesc(Facility facility, Pageable page);
 
     @Query("""
                 SELECT IFNULL(AVG(review.starRating.value), 0)
                 FROM Review review
-                WHERE review.reservation.facility = :facility
+                WHERE review.facility = :facility
             """)
     double findAverageStarRatingByFacility(Facility facility);
 }

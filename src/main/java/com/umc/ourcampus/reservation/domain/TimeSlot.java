@@ -11,6 +11,10 @@ public record TimeSlot(
         LocalDateTime startTime,
         LocalDateTime endTime
 ) {
+    public static TimeSlot of(LocalDateTime startTime, Duration duration) {
+        return new TimeSlot(startTime, startTime.plus(duration));
+    }
+
     public boolean overlaps(TimeSlot other) {
         return !(
                 endTime.isBefore(other.startTime) ||

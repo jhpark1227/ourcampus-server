@@ -1,15 +1,12 @@
 package com.umc.ourcampus.review.application;
 
-import com.umc.ourcampus.facility.domain.FacilityAndHashTag;
-import com.umc.ourcampus.facility.domain.Facility;
-import com.umc.ourcampus.facility.domain.FacilityRepository;
+import com.umc.ourcampus.global.exception.ApplicationException;
+import com.umc.ourcampus.global.exception.ErrorStatus;
 import com.umc.ourcampus.review.application.dto.response.HashTagResponse;
-import com.umc.ourcampus.review.application.dto.response.HashTagWithFacilitiesResponse;
-import com.umc.ourcampus.review.domain.HashTag;
 import com.umc.ourcampus.review.domain.HashTagRepository;
+import com.umc.ourcampus.university.domain.UniversityRepository;
+import java.time.Instant;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class HashTagService {
 
     private final HashTagRepository hashTagRepository;
-    private final FacilityRepository facilityRepository;
+    private final UniversityRepository universityRepository;
 
     public List<HashTagResponse> findAllHashTags() {
         return hashTagRepository.findAll()
@@ -27,19 +24,13 @@ public class HashTagService {
                 .toList();
     }
 
-    public List<HashTagWithFacilitiesResponse> getTopHashTags(int size) {
-        List<HashTag> hashTags = hashTagRepository.findTopHashTags(size);
-        List<FacilityAndHashTag> facilityAndHashTag = facilityRepository.findFacilityAndHashTagIdByHashTags(hashTags);
-        Map<HashTag, List<Facility>> facilitiesByHashTag = facilityAndHashTag.stream()
-                .collect(Collectors.groupingBy(
-                        FacilityAndHashTag::hashTag,
-                        Collectors.mapping(FacilityAndHashTag::facility, Collectors.toList())
-                ));
-        return hashTags.stream()
-                .map(hashTag -> HashTagWithFacilitiesResponse.of(
-                        hashTag,
-                        facilitiesByHashTag.getOrDefault(hashTag, List.of())
-                ))
+    public List<HashTagResponse> getRandomHashTags(long universityId) {
+        universityRepository.findById(universityId)
+                .orElseThrow(() -> new ApplicationException(ErrorStatus.UNIVERSITY_NOT_FOUND));
+        long seed = Instant.now().getEpochSecond() / (4 * 3600);
+        return hashTagRepository.findRandomHashTags(5, seed)
+                .stream()
+                .map(HashTagResponse::from)
                 .toList();
     }
 }

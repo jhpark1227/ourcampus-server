@@ -35,7 +35,7 @@ public record FacilityDetailResponse(
                 facility.getLocation(),
                 facility.getThumbnailImage(),
                 facility.getCategory(),
-                facility.getImages(),
+                facility.getImages().stream().toList(),
                 facility.getOperationTimes()
                         .stream()
                         .map(OperationTimeResponse::from)

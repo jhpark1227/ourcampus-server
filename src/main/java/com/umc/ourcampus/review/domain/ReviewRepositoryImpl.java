@@ -20,7 +20,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         return queryFactory
                 .select(Projections.constructor(ReviewStarRatingCount.class, review.starRating, review.count()))
                 .from(review)
-                .where(review.reservation.facility.eq(facility))
+                .where(review.facility.eq(facility))
                 .groupBy(review.starRating)
                 .fetch();
     }
