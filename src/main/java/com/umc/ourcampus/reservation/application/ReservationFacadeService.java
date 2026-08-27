@@ -1,3 +1,4 @@
+/*
 package com.umc.ourcampus.reservation.application;
 
 import com.umc.ourcampus.reservation.application.dto.request.ReservationRequest;
@@ -25,3 +26,4 @@ public class ReservationFacadeService {
         }
     }
 }
+*/

@@ -2,7 +2,6 @@ package com.umc.ourcampus.reservation.presentation;
 
 import com.umc.ourcampus.auth.domain.UserPrincipal;
 import com.umc.ourcampus.facility.application.dto.response.FacilityScheduleResponse;
-import com.umc.ourcampus.reservation.application.ReservationFacadeService;
 import com.umc.ourcampus.reservation.application.ReservationService;
 import com.umc.ourcampus.reservation.application.dto.request.ReservationExtendRequest;
 import com.umc.ourcampus.reservation.application.dto.request.ReservationRequest;
@@ -33,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final ReservationFacadeService reservationFacadeService;
+    private final ReservationService reservationFacadeService;
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationCreateResponse> reserve(

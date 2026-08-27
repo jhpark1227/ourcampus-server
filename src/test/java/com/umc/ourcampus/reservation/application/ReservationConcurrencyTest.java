@@ -34,7 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ReservationConcurrencyTest {
 
     @Autowired
-    ReservationFacadeService sut;
+    ReservationService sut;
 
     @Autowired
     MemberRepository memberRepository;
