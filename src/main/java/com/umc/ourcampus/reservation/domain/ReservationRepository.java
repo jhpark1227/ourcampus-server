@@ -12,7 +12,12 @@ import org.springframework.data.jpa.repository.Query;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
     default List<Reservation> findByFacilityAndDate(Facility facility, LocalDate date) {
-        return findByFacilityAndPeriod(facility, date.atStartOfDay(), date.plusDays(1).atStartOfDay());
+        return findByFacilityAndDateRange(facility, date, date.plusDays(1));
+    }
+
+    default List<Reservation> findByFacilityAndDateRange(
+            Facility facility, LocalDate startDate, LocalDate endDateExclusive) {
+        return findByFacilityAndPeriod(facility, startDate.atStartOfDay(), endDateExclusive.atStartOfDay());
     }
 
     @Query("""

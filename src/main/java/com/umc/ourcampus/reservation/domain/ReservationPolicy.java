@@ -8,9 +8,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -48,10 +46,12 @@ public class ReservationPolicy {
         return timeSlots;
     }
 
-    public Collection<TimeSlot> getAvailableTimeSlots(LocalDate date, List<Reservation> reservations) {
+    public List<SlotAvailability> getSlotAvailabilities(LocalDate date, List<Reservation> reservations) {
         return getTimeSlots(date).stream()
-                .filter(timeSlot -> reservations.stream().noneMatch(reservation -> reservation.overlapTimeSlot(timeSlot)))
-                .collect(Collectors.toSet());
+                .map(timeSlot -> new SlotAvailability(
+                        timeSlot,
+                        reservations.stream().anyMatch(reservation -> reservation.overlapTimeSlot(timeSlot))))
+                .toList();
     }
 
     public void isValidSlot(TimeSlot timeSlot) {

@@ -13,7 +13,6 @@ import com.umc.ourcampus.reservation.application.dto.request.ReservationReturnRe
 import com.umc.ourcampus.reservation.application.dto.response.ReservationCreateResponse;
 import com.umc.ourcampus.reservation.application.dto.response.ReservationInfo;
 import com.umc.ourcampus.reservation.application.dto.response.ReservationResponse;
-import com.umc.ourcampus.reservation.application.dto.response.TimeSlotWithBookedResponse;
 import com.umc.ourcampus.reservation.domain.HeadCount;
 import com.umc.ourcampus.reservation.domain.Reservation;
 import com.umc.ourcampus.reservation.domain.ReservationPolicy;
@@ -22,9 +21,10 @@ import com.umc.ourcampus.reservation.domain.ReservationValidator;
 import com.umc.ourcampus.reservation.domain.TimeSlot;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class ReservationService {
+
+    private static final int WEEKLY_SCHEDULE_DAYS = 7;
 
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
@@ -90,30 +92,29 @@ public class ReservationService {
     public List<FacilityScheduleResponse> getWeeklySchedule(Long facilityId, LocalDate baseDate) {
         Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
-        List<FacilityScheduleResponse> facilitySchedules = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            LocalDate date = baseDate.plusDays(i);
-            List<TimeSlotWithBookedResponse> times = getAvailableTimeSlots(facility, date);
-            facilitySchedules.add(new FacilityScheduleResponse(times, date));
-        }
-        return facilitySchedules;
+        ReservationPolicy reservationPolicy = facility.getReservationPolicy();
+        Map<LocalDate, List<Reservation>> reservationsByDate = reservationRepository
+                .findByFacilityAndDateRange(facility, baseDate, baseDate.plusDays(WEEKLY_SCHEDULE_DAYS))
+                .stream()
+                .collect(Collectors.groupingBy(reservation -> reservation.getTimeSlot().startTime().toLocalDate()));
+
+        return IntStream.range(0, WEEKLY_SCHEDULE_DAYS)
+                .mapToObj(baseDate::plusDays)
+                .map(date -> FacilityScheduleResponse.of(
+                        date,
+                        reservationPolicy.getSlotAvailabilities(
+                                date, reservationsByDate.getOrDefault(date, List.of()))))
+                .toList();
     }
 
     public ReservationInfo getReservationInfo(long facilityId, LocalDate date) {
         Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new ApplicationException(ErrorStatus.FACILITY_NOT_FOUND));
         ReservationPolicy reservationPolicy = facility.getReservationPolicy();
-        return ReservationInfo.of(getAvailableTimeSlots(facility, date), reservationPolicy.getReservationDurationLimit());
-    }
-
-    private List<TimeSlotWithBookedResponse> getAvailableTimeSlots(Facility facility, LocalDate date) {
         List<Reservation> reservations = reservationRepository.findByFacilityAndDate(facility, date);
-        ReservationPolicy reservationPolicy = facility.getReservationPolicy();
-        List<TimeSlot> timeSlots = reservationPolicy.getTimeSlots(date);
-        Collection<TimeSlot> availableTimeSlots = reservationPolicy.getAvailableTimeSlots(date, reservations);
-        return timeSlots.stream()
-                .map(timeSlot -> TimeSlotWithBookedResponse.of(timeSlot, !availableTimeSlots.contains(timeSlot)))
-                .toList();
+        return ReservationInfo.of(
+                reservationPolicy.getSlotAvailabilities(date, reservations),
+                reservationPolicy.getReservationDurationLimit());
     }
 
     public ReservationResponse findInUseReservation(Long memberId) {
